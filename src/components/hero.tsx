@@ -21,7 +21,7 @@ export const Hero = () => {
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
           className="text-5xl md:text-8xl font-extrabold tracking-tighter mb-4"
         >
           SM Movement
@@ -29,7 +29,7 @@ export const Hero = () => {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+          transition={{ duration: 0.8, delay: 0.7, ease: "easeOut" }}
           className="max-w-3xl mx-auto text-xl text-gray-200"
         >
           Exclusiviteit in beweging. Van premium auto's en luxe boten tot

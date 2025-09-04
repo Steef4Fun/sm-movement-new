@@ -15,7 +15,7 @@ export default function Home() {
     const timer = setTimeout(() => {
       setIsLoading(false);
       document.body.style.overflow = "auto";
-    }, 2500); // Preloader duration
+    }, 1500); // Preloader duration shortened
 
     document.body.style.overflow = "hidden";
 

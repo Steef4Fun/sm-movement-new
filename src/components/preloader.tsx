@@ -16,7 +16,7 @@ export const Preloader = () => {
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.8, delay: 1, ease: "easeIn" } }}
+      exit={{ opacity: 0, transition: { duration: 0.5, ease: "easeIn" } }}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-background"
     >
       <motion.div
@@ -25,10 +25,10 @@ export const Preloader = () => {
         animate="visible"
       >
         <Image
-          src="/logo.png"
+          src="/logo-full.png"
           alt="SM Movement Logo"
-          width={150}
-          height={150}
+          width={250}
+          height={250}
           priority
           unoptimized
         />
