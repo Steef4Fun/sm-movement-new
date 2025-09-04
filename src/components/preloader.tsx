@@ -15,14 +15,15 @@ export const Preloader = () => {
 
   return (
     <motion.div
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0, transition: { duration: 0.5, ease: "easeIn" } }}
+      initial={{ y: 0 }}
+      exit={{ y: "-100vh", transition: { duration: 1, ease: [0.87, 0, 0.13, 1], delay: 0.2 } }}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-background"
     >
       <motion.div
         variants={logoVariants}
         initial="hidden"
         animate="visible"
+        exit={{ opacity: 0, transition: { duration: 0.5, ease: "easeOut" } }}
       >
         <Image
           src="/logo-full.png"
