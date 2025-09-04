@@ -2,25 +2,27 @@
 
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { createClient } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export default function LoginPage() {
-  const supabase = createClient();
   const router = useRouter();
 
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        router.push("/"); // Redirect to home after login
+    } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) => {
+        if (session) {
+          router.push("/"); // Redirect to home after login
+        }
       }
-    });
+    );
 
     return () => subscription.unsubscribe();
-  }, [supabase, router]);
+  }, [router]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
