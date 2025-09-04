@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { Car, Ship, Sparkles, Wrench } from "lucide-react";
 
 export const Services = () => {
@@ -31,7 +31,7 @@ export const Services = () => {
     },
   ];
 
-  const cardVariants = {
+  const cardVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: (i: number) => ({
       opacity: 1,

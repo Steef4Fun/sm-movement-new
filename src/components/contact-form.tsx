@@ -77,7 +77,7 @@ export function ContactForm() {
                 <Input placeholder="voorbeeld@email.com" {...field} />
               </FormControl>
               <FormMessage />
-            </Item>
+            </FormItem>
           )}
         />
         <FormField
@@ -90,7 +90,7 @@ export function ContactForm() {
                 <Input placeholder="Waar gaat uw bericht over?" {...field} />
               </FormControl>
               <FormMessage />
-            </Item>
+            </FormItem>
           )}
         />
         <FormField
@@ -107,7 +107,7 @@ export function ContactForm() {
                 />
               </FormControl>
               <FormMessage />
-            </Item>
+            </FormItem>
           )}
         />
         <Button type="submit" className="w-full">
