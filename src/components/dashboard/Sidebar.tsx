@@ -11,17 +11,23 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { profile } = useAuth();
 
-  const navItems = [
-    { href: "/dashboard", icon: Home, label: "Overzicht" },
-    { href: "/dashboard/aanbod", icon: Car, label: "Aanbodbeheer" },
-    { href: "/dashboard/afspraken", icon: Calendar, label: "Afspraakbeheer" },
-    { href: "/dashboard/gebruikers", icon: Users, label: "Gebruikersbeheer" },
-    { href: "/dashboard/offertes", icon: FileText, label: "Mijn Offertes" },
+  const allNavItems = [
+    { href: "/dashboard", icon: Home, label: "Overzicht", adminOnly: false },
+    { href: "/dashboard/aanbod", icon: Car, label: "Aanbodbeheer", adminOnly: true },
+    { href: "/dashboard/afspraken", icon: Calendar, label: "Mijn Afspraken", adminOnly: false },
+    { href: "/dashboard/gebruikers", icon: Users, label: "Gebruikersbeheer", adminOnly: true },
+    { href: "/dashboard/offertes", icon: FileText, label: "Mijn Offertes", adminOnly: false },
   ];
+
+  const navItems = allNavItems.filter(item => 
+    !item.adminOnly || (profile?.role === 'admin')
+  );
 
   return (
     <div className="hidden border-r bg-muted/40 md:block">
