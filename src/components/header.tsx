@@ -17,31 +17,31 @@ export const Header = () => {
       )}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex h-16 items-center justify-between">
-        <Link href="/" className="text-2xl font-bold text-white">
+        <Link href="/" className="text-2xl font-bold text-primary">
           SM Movement
         </Link>
         <nav className="hidden md:flex gap-6">
           <Link
             href="/aanbod"
-            className="text-sm font-medium text-white hover:text-primary transition-colors"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             Aanbod
           </Link>
           <Link
             href="/detailing"
-            className="text-sm font-medium text-white hover:text-primary transition-colors"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             Detailing
           </Link>
           <Link
             href="/tuning"
-            className="text-sm font-medium text-white hover:text-primary transition-colors"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             Tuning
           </Link>
           <Link
             href="/contact"
-            className="text-sm font-medium text-white hover:text-primary transition-colors"
+            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
           >
             Contact
           </Link>
