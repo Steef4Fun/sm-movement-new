@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -28,6 +27,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -43,6 +43,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 const appointmentSchema = z.object({
+  customer_email: z.string().email("Voer een geldig e-mailadres in."),
   service_type: z.enum(["Detailing", "Tuning", "Consultatie"], {
     required_error: "Service type is verplicht.",
   }),
@@ -65,8 +66,6 @@ export function AddAppointmentDialog({
   setIsOpen,
   onAppointmentAdded,
 }: AddAppointmentDialogProps) {
-  const { user } = useAuth();
-
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
@@ -75,22 +74,17 @@ export function AddAppointmentDialog({
   });
 
   const onSubmit = async (values: AppointmentFormValues) => {
-    if (!user) {
-      toast.error("U moet ingelogd zijn om een afspraak te maken.");
-      return;
-    }
-
-    const { error } = await supabase.from("appointments").insert([
+    const { data, error } = await supabase.functions.invoke(
+      "create-appointment",
       {
-        ...values,
-        user_id: user.id,
-      },
-    ]);
+        body: values,
+      }
+    );
 
-    if (error) {
-      toast.error("Er is een fout opgetreden:", error.message);
+    if (error || data.error) {
+      toast.error("Fout bij aanmaken afspraak:", error?.message || data.error);
     } else {
-      toast.success("Afspraak succesvol aangevraagd!");
+      toast.success("Afspraak succesvol aangemaakt!");
       onAppointmentAdded();
       setIsOpen(false);
       form.reset();
@@ -101,13 +95,30 @@ export function AddAppointmentDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Nieuwe Afspraak Maken</DialogTitle>
+          <DialogTitle>Nieuwe Afspraak Inplannen</DialogTitle>
           <DialogDescription>
-            Selecteer een service en een voorkeursdatum.
+            Plan een afspraak in voor een klant.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="customer_email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E-mailadres Klant</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="klant@email.com"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="service_type"
@@ -190,7 +201,7 @@ export function AddAppointmentDialog({
             />
             <DialogFooter>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Aanvragen..." : "Aanvragen"}
+                {form.formState.isSubmitting ? "Inplannen..." : "Inplannen"}
               </Button>
             </DialogFooter>
           </form>
