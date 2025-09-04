@@ -51,6 +51,21 @@ export default function ContactPage() {
                   <p className="text-muted-foreground">info@smmovement.nl</p>
                 </div>
               </div>
+
+              <div className="pt-8">
+                <h3 className="text-xl font-semibold mb-4">Vind Ons Hier</h3>
+                <div className="rounded-lg overflow-hidden border border-border">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2435.933469304358!2d4.8922243158022!3d52.3702159797865!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47c609c5d4b6b8b7%3A0x4009c653c29e000!2sAmsterdam%2C%20Netherlands!5e0!3m2!1sen!2sus!4v1620308000000!5m2!1sen!2sus"
+                    className="w-full h-80"
+                    style={{ border: 0 }}
+                    allowFullScreen={true}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Google Maps Locatie SM Movement"
+                  ></iframe>
+                </div>
+              </div>
             </div>
 
             <div>
