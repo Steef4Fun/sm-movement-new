@@ -1,12 +1,15 @@
 export const Hero = () => {
   return (
-    <section className="py-20 md:py-32 bg-secondary">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tighter mb-4">
-          Ervaar de Beweging
+    <section className="relative flex items-center justify-center h-screen overflow-hidden">
+      {/* This div is prepared for a background video, currently showing a dark background. */}
+      <div className="absolute inset-0 bg-black z-0" />
+      
+      <div className="relative z-10 text-center px-4">
+        <h1 className="text-5xl md:text-8xl font-extrabold tracking-tighter mb-4 text-foreground">
+          SM Movement
         </h1>
-        <p className="max-w-2xl mx-auto text-lg text-muted-foreground">
-          Uw partner in exclusieve auto's, luxe boten en professionele detailing.
+        <p className="max-w-3xl mx-auto text-xl text-muted-foreground">
+          Exclusiviteit in beweging. Van premium auto's en luxe boten tot meesterlijke detailing en tuning.
         </p>
       </div>
     </section>

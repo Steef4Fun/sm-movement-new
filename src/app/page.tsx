@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-geist-sans)]">
       <Header />
-      <main className="flex-grow">
+      <main>
         <Hero />
         <Services />
       </main>
