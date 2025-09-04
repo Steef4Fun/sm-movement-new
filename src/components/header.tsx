@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { Skeleton } from "./ui/skeleton";
 
 export const Header = () => {
   const scrolled = useScrolled();
+  const { user, isLoading } = useAuth();
 
   return (
     <header
@@ -46,9 +49,18 @@ export const Header = () => {
           >
             Contact
           </Link>
-          <Button asChild variant="outline">
-            <Link href="/login">Login</Link>
-          </Button>
+
+          {isLoading ? (
+            <Skeleton className="h-10 w-24" />
+          ) : user ? (
+            <Button asChild>
+              <Link href="/dashboard">Dashboard</Link>
+            </Button>
+          ) : (
+            <Button asChild variant="outline">
+              <Link href="/login">Login</Link>
+            </Button>
+          )}
         </nav>
       </div>
     </header>
