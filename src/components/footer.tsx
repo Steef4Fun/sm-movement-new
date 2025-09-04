@@ -6,7 +6,7 @@ export const Footer = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
         <p>&copy; {new Date().getFullYear()} SM Movement. Alle rechten voorbehouden.</p>
         <div className="flex items-center gap-4 mt-4 md:mt-0">
-          <a href="mailto:info@smmovement.nl" className="hover:text-primary transition-colors">info@smmovement.nl</a>
+          <a href="mailto:info@sm-movement.nl" className="hover:text-primary transition-colors">info@sm-movement.nl</a>
           <MadeWithDyad />
         </div>
       </div>
