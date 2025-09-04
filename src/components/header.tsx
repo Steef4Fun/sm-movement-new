@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useScrolled } from "@/hooks/use-scrolled";
 import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
 
 export const Header = () => {
   const scrolled = useScrolled();
@@ -20,7 +21,7 @@ export const Header = () => {
         <Link href="/" className="text-2xl font-bold text-primary">
           SM Movement
         </Link>
-        <nav className="hidden md:flex gap-6">
+        <nav className="hidden md:flex items-center gap-6">
           <Link
             href="/aanbod"
             className="text-sm font-medium text-primary hover:text-primary/80 transition-colors"
@@ -45,6 +46,9 @@ export const Header = () => {
           >
             Contact
           </Link>
+          <Button asChild variant="outline">
+            <Link href="/login">Login</Link>
+          </Button>
         </nav>
       </div>
     </header>
