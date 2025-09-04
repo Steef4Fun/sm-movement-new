@@ -8,10 +8,16 @@ export const Header = () => {
           SM Movement
         </Link>
         <nav className="hidden md:flex gap-6">
-          <Link href="#services" className="text-sm font-medium hover:underline underline-offset-4">
-            Diensten
+          <Link href="/aanbod" className="text-sm font-medium text-primary hover:underline underline-offset-4">
+            Aanbod
           </Link>
-          <Link href="#contact" className="text-sm font-medium hover:underline underline-offset-4">
+          <Link href="/detailing" className="text-sm font-medium text-primary hover:underline underline-offset-4">
+            Detailing
+          </Link>
+          <Link href="/tuning" className="text-sm font-medium text-primary hover:underline underline-offset-4">
+            Tuning
+          </Link>
+          <Link href="/contact" className="text-sm font-medium text-primary hover:underline underline-offset-4">
             Contact
           </Link>
         </nav>

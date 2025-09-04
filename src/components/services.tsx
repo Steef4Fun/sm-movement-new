@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Car, Ship, Sparkles } from "lucide-react";
+import { Car, Ship, Sparkles, Wrench } from "lucide-react";
 
 export const Services = () => {
   const services = [
@@ -18,6 +18,11 @@ export const Services = () => {
       title: "Detailing",
       description: "Laat uw voertuig weer stralen met onze professionele schoonmaakdiensten.",
     },
+    {
+      icon: <Wrench className="h-8 w-8 text-primary" />,
+      title: "Tuning",
+      description: "Optimaliseer de prestaties en het uiterlijk van uw auto.",
+    },
   ];
 
   return (
@@ -27,7 +32,7 @@ export const Services = () => {
           <h2 className="text-3xl md:text-4xl font-bold">Onze Diensten</h2>
           <p className="text-muted-foreground mt-2">Wat wij voor u kunnen betekenen.</p>
         </div>
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {services.map((service) => (
             <Card key={service.title}>
               <CardHeader className="items-center text-center p-6">
