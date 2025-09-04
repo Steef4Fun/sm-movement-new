@@ -78,7 +78,7 @@ export function AddListingDialog({
     ]);
 
     if (error) {
-      toast.error("Er is een fout opgetreden:", error.message);
+      toast.error(`Er is een fout opgetreden: ${error.message}`);
     } else {
       toast.success("Aanbod succesvol toegevoegd!");
       onListingAdded();
