@@ -64,7 +64,7 @@ export default function OfferteBeheerPage() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Fout bij ophalen offertes:", error.message);
+      toast.error(`Fout bij ophalen offertes: ${error.message}`);
     } else if (data) {
       setQuotes(data as Quote[]);
     }

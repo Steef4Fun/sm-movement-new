@@ -9,6 +9,19 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+// Define types for clarity
+interface Profile {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
+  role: string;
+}
+
+interface AuthUser {
+  id: string;
+  email?: string;
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -56,8 +69,8 @@ serve(async (req: Request) => {
     if (profilesError) throw profilesError;
 
     // Voeg gebruikers en profielen samen
-    const profilesMap = new Map(profiles.map((p) => [p.id, p]));
-    const mergedUsers = users.map((u) => {
+    const profilesMap = new Map((profiles as Profile[]).map((p) => [p.id, p]));
+    const mergedUsers = (users as AuthUser[]).map((u) => {
       const profile = profilesMap.get(u.id);
       return {
         id: u.id,

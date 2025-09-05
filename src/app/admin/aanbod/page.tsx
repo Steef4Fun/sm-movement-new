@@ -64,7 +64,7 @@ export default function AanbodBeheerPage() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Fout bij ophalen aanbod:", error.message);
+      toast.error(`Fout bij ophalen aanbod: ${error.message}`);
     } else if (data) {
       setListings(data);
     }

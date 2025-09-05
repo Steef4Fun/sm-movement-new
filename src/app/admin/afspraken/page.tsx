@@ -63,7 +63,7 @@ export default function AfspraakBeheerPage() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      toast.error("Fout bij ophalen afspraken:", error.message);
+      toast.error(`Fout bij ophalen afspraken: ${error.message}`);
     } else if (data) {
       setAppointments(data as Appointment[]);
     }
