@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { User, Calendar, FileText } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { User, Calendar, FileText, LogOut } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export function AccountSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const navItems = [
     { href: "/account/profiel", icon: User, label: "Mijn Profiel" },
@@ -14,8 +17,13 @@ export function AccountSidebar() {
     { href: "/account/offertes", icon: FileText, label: "Mijn Offertes" },
   ];
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/");
+  };
+
   return (
-    <aside className="hidden md:block">
+    <aside className="hidden md:flex flex-col justify-between h-full">
       <nav className="grid gap-2 text-sm font-medium">
         {navItems.map((item) => (
           <Link
@@ -31,6 +39,12 @@ export function AccountSidebar() {
           </Link>
         ))}
       </nav>
+      <div className="mt-auto">
+        <Button variant="ghost" className="w-full justify-start" onClick={handleLogout}>
+          <LogOut className="h-4 w-4 mr-3" />
+          Uitloggen
+        </Button>
+      </div>
     </aside>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleUser, Menu } from "lucide-react";
+import { CircleUser, Menu, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,6 +15,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "./Sidebar";
+import Link from "next/link";
 
 export function Header() {
   const { user } = useAuth();
@@ -55,6 +56,12 @@ export function Header() {
             {user?.email || "My Account"}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/account/profiel">
+              <UserIcon className="mr-2 h-4 w-4" />
+              <span>Klantweergave</span>
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem>Instellingen</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>Uitloggen</DropdownMenuItem>
