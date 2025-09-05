@@ -22,19 +22,29 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const authHeader = req.headers.get("Authorization")!;
-    const { data: { user: adminUser } } = await supabaseAdmin.auth.getUser(authHeader.replace("Bearer ", ""));
-    if (!adminUser) throw new Error("Unauthorized");
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing Authorization header" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const { data: authData, error: authError } = await supabaseAdmin.auth.getUser(authHeader.replace("Bearer ", ""));
+    if (authError || !authData.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const adminUser = authData.user;
 
-    const { data: adminProfile } = await supabaseAdmin
+    const { data: adminProfile, error: adminError } = await supabaseAdmin
       .from("profiles")
       .select("role")
       .eq("id", adminUser.id)
       .single();
-    if (adminProfile?.role !== 'admin') throw new Error("Forbidden");
+    if (adminError || adminProfile?.role !== 'admin') {
+      return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
     const { userId } = await req.json();
-    if (!userId) throw new Error("Missing user ID");
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Missing user ID" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
 
     const { data, error } = await supabaseAdmin.auth.admin.deleteUser(userId);
 

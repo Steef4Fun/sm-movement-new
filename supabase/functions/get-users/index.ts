@@ -35,12 +35,16 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Controleer of de aanroeper een admin is
-    const authHeader = req.headers.get("Authorization")!;
-    const {
-      data: { user },
-    } = await supabaseAdmin.auth.getUser(authHeader.replace("Bearer ", ""));
-    if (!user) throw new Error("Unauthorized");
+    // Authenticate and authorize the admin caller (safer method)
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Missing Authorization header" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const { data: authData, error: authError } = await supabaseAdmin.auth.getUser(authHeader.replace("Bearer ", ""));
+    if (authError || !authData.user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    const user = authData.user;
 
     const { data: adminProfile, error: adminError } = await supabaseAdmin
       .from("profiles")
