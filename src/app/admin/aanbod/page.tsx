@@ -19,7 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusCircle } from "lucide-react";
-import { AddListingDialog } from "@/components/dashboard/AddListingDialog";
+import { AddListingDialog } from "@/components/admin/AddListingDialog";
 
 // Define a type for the listing for type safety
 type Listing = {

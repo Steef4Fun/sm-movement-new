@@ -20,7 +20,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PlusCircle } from "lucide-react";
-import { AddAppointmentDialog } from "@/components/dashboard/AddAppointmentDialog";
+import { AddAppointmentDialog } from "@/components/admin/AddAppointmentDialog";
 
 type Appointment = {
   id: string;
