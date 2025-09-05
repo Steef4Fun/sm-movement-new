@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,8 +18,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PlusCircle } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { PlusCircle, MoreHorizontal, Trash2, Pencil } from "lucide-react";
 import { AddAppointmentDialog } from "@/components/admin/AddAppointmentDialog";
+import { EditAppointmentDialog } from "@/components/admin/EditAppointmentDialog";
+import { toast } from "sonner";
 
 type Appointment = {
   id: string;
@@ -31,10 +48,12 @@ type Appointment = {
 };
 
 export default function AfspraakBeheerPage() {
-  const { profile } = useAuth();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
 
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
@@ -44,7 +63,7 @@ export default function AfspraakBeheerPage() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Error fetching appointments:", error);
+      toast.error("Fout bij ophalen afspraken:", error.message);
     } else if (data) {
       setAppointments(data as Appointment[]);
     }
@@ -55,62 +74,109 @@ export default function AfspraakBeheerPage() {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  const isAdmin = profile?.role === "admin";
+  const handleEdit = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (appointment: Appointment) => {
+    setSelectedAppointment(appointment);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!selectedAppointment) return;
+    const { error } = await supabase
+      .from("appointments")
+      .delete()
+      .eq("id", selectedAppointment.id);
+
+    if (error) {
+      toast.error(`Fout bij verwijderen: ${error.message}`);
+    } else {
+      toast.success("Afspraak succesvol verwijderd.");
+      fetchAppointments();
+    }
+    setIsDeleteDialogOpen(false);
+    setSelectedAppointment(null);
+  };
 
   return (
     <>
       <AddAppointmentDialog
-        isOpen={isDialogOpen}
-        setIsOpen={setIsDialogOpen}
+        isOpen={isAddDialogOpen}
+        setIsOpen={setIsAddDialogOpen}
         onAppointmentAdded={fetchAppointments}
       />
+      {selectedAppointment && (
+        <EditAppointmentDialog
+          isOpen={isEditDialogOpen}
+          setIsOpen={setIsEditDialogOpen}
+          onAppointmentUpdated={fetchAppointments}
+          appointment={selectedAppointment}
+        />
+      )}
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Weet u het zeker?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Deze actie kan niet ongedaan worden gemaakt. Dit zal de afspraak
+              permanent verwijderen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuleren</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              Verwijderen
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Card>
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>
-                {isAdmin ? "Afsprakenbeheer" : "Mijn Afspraken"}
-              </CardTitle>
+              <CardTitle>Afsprakenbeheer</CardTitle>
               <CardDescription>
-                {isAdmin
-                  ? "Bekijk en beheer hier alle afspraken."
-                  : "Bekijk hier uw afspraken."}
+                Bekijk en beheer hier alle afspraken.
               </CardDescription>
             </div>
-            {isAdmin && (
-              <Button onClick={() => setIsDialogOpen(true)}>
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Nieuwe Afspraak
-              </Button>
-            )}
+            <Button onClick={() => setIsAddDialogOpen(true)}>
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Nieuwe Afspraak
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                {isAdmin && <TableHead>Klant</TableHead>}
+                <TableHead>Klant</TableHead>
                 <TableHead>Service</TableHead>
                 <TableHead>Aangevraagde Datum</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead className="text-right">Acties</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={isAdmin ? 4 : 3} className="text-center">
+                  <TableCell colSpan={5} className="text-center">
                     Laden...
                   </TableCell>
                 </TableRow>
               ) : appointments.length > 0 ? (
                 appointments.map((appointment) => (
                   <TableRow key={appointment.id}>
-                    {isAdmin && (
-                      <TableCell>
-                        {appointment.profiles?.first_name || "Onbekende"}{" "}
-                        {appointment.profiles?.last_name || "Klant"}
-                      </TableCell>
-                    )}
+                    <TableCell>
+                      {appointment.profiles?.first_name || "Onbekende"}{" "}
+                      {appointment.profiles?.last_name || "Klant"}
+                    </TableCell>
                     <TableCell className="font-medium">
                       {appointment.service_type}
                     </TableCell>
@@ -120,11 +186,34 @@ export default function AfspraakBeheerPage() {
                       )}
                     </TableCell>
                     <TableCell>{appointment.status}</TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEdit(appointment)}>
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Bewerken
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(appointment)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Verwijderen
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={isAdmin ? 4 : 3} className="text-center">
+                  <TableCell colSpan={5} className="text-center">
                     Geen afspraken gevonden.
                   </TableCell>
                 </TableRow>
