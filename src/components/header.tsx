@@ -9,7 +9,14 @@ import { Skeleton } from "./ui/skeleton";
 
 export const Header = () => {
   const scrolled = useScrolled();
-  const { user, isLoading } = useAuth();
+  const { user, profile, isLoading } = useAuth();
+
+  const getDashboardLink = () => {
+    if (profile?.role === 'admin') {
+      return "/admin";
+    }
+    return "/account/profiel";
+  }
 
   return (
     <header
@@ -54,7 +61,7 @@ export const Header = () => {
             <Skeleton className="h-10 w-24" />
           ) : user ? (
             <Button asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href={getDashboardLink()}>Mijn Account</Link>
             </Button>
           ) : (
             <Button asChild variant="outline">
@@ -65,4 +72,4 @@ export const Header = () => {
       </div>
     </header>
   );
-};
+}

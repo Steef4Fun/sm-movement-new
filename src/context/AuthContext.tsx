@@ -8,7 +8,8 @@ import type { Session, User } from "@supabase/supabase-js";
 type Profile = {
   id: string;
   role: string;
-  // Add other profile fields here if needed
+  first_name: string | null;
+  last_name: string | null;
 };
 
 interface AuthContextType {
