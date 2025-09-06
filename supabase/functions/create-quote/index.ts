@@ -22,7 +22,6 @@ serve(async (req: Request) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // 1. Authenticate & Authorize Admin (safer method)
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Missing Authorization header" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
@@ -42,21 +41,38 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Forbidden" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // 2. Get data from request body
     const { customer_email, subject, amount } = await req.json();
     if (!customer_email || !subject || !amount) {
       return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    // 3. Look up customer
     const { data: customerData, error: customerError } = await supabaseAdmin.auth.admin.getUserByEmail(customer_email);
     if (customerError || !customerData.user) {
-      console.error("Customer lookup error:", customerError);
       return new Response(JSON.stringify({ error: "Customer not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const customerId = customerData.user.id;
 
-    // 4. Insert quote
+    // Ensure a profile exists for the customer
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .eq("id", customerId)
+      .single();
+
+    if (profileError && profileError.code === 'PGRST116') { // PGRST116 = single row not found
+      const { error: createProfileError } = await supabaseAdmin
+        .from("profiles")
+        .insert({ id: customerId });
+      
+      if (createProfileError) {
+        console.error("Failed to create profile for user:", createProfileError);
+        return new Response(JSON.stringify({ error: `Could not create profile for user: ${createProfileError.message}` }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+    } else if (profileError) {
+      console.error("Error checking for profile:", profileError);
+      return new Response(JSON.stringify({ error: `Error checking profile: ${profileError.message}` }), { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     const { data: quote, error: insertError } = await supabaseAdmin
       .from("offertes")
       .insert({ user_id: customerId, subject, amount })
