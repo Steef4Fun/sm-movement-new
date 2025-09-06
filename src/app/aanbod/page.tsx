@@ -20,8 +20,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Car, Ship, Search, Loader2 } from "lucide-react";
+import { Car, Ship, Search } from "lucide-react";
 import Link from "next/link";
+import { ListingCardSkeleton } from "@/components/skeletons/ListingCardSkeleton";
 
 type Listing = {
   id: string;
@@ -129,15 +130,17 @@ export default function AanbodPage() {
 
             {/* Listings Grid */}
             {loading ? (
-              <div className="flex justify-center items-center h-64">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <ListingCardSkeleton key={i} />
+                ))}
               </div>
             ) : listings.length > 0 ? (
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {listings.map((item) => (
                   <Card
                     key={item.id}
-                    className="overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col"
+                    className="overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col hover:-translate-y-1"
                   >
                     <CardHeader className="p-0">
                       <div className="aspect-video bg-secondary flex items-center justify-center">

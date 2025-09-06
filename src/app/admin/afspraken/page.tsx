@@ -41,6 +41,7 @@ import { AddAppointmentDialog } from "@/components/admin/AddAppointmentDialog";
 import { EditAppointmentDialog } from "@/components/admin/EditAppointmentDialog";
 import { toast } from "sonner";
 import { isSameDay } from "date-fns";
+import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
 
 type Appointment = {
   id: string;
@@ -209,11 +210,9 @@ export default function AfspraakBeheerPage() {
               </TableHeader>
               <TableBody>
                 {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      Laden...
-                    </TableCell>
-                  </TableRow>
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <TableRowSkeleton key={i} columns={5} />
+                  ))
                 ) : filteredAppointments.length > 0 ? (
                   filteredAppointments.map((appointment) => (
                     <TableRow key={appointment.id}>

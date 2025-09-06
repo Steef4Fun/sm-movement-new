@@ -34,10 +34,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, MoreHorizontal, Trash2, Pencil } from "lucide-react";
+import { PlusCircle, MoreHorizontal, Trash2, Pencil, Car } from "lucide-react";
 import { AddListingDialog } from "@/components/admin/AddListingDialog";
 import { EditListingDialog } from "@/components/admin/EditListingDialog";
 import { toast } from "sonner";
+import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
 
 type Listing = {
   id: string;
@@ -161,11 +162,9 @@ export default function AanbodBeheerPage() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    Laden...
-                  </TableCell>
-                </TableRow>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRowSkeleton key={i} columns={6} />
+                ))
               ) : listings.length > 0 ? (
                 listings.map((listing) => (
                   <TableRow key={listing.id}>
@@ -208,8 +207,19 @@ export default function AanbodBeheerPage() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    Geen aanbod gevonden.
+                  <TableCell colSpan={6}>
+                    <div className="flex flex-col items-center justify-center text-center py-16">
+                      <Car className="h-16 w-16 text-muted-foreground mb-4" />
+                      <h3 className="text-xl font-semibold">Nog geen aanbod</h3>
+                      <p className="text-muted-foreground mb-6 max-w-sm">
+                        Voeg het eerste item toe aan uw aanbod om het hier te
+                        zien.
+                      </p>
+                      <Button onClick={() => setIsAddDialogOpen(true)}>
+                        <PlusCircle className="h-4 w-4 mr-2" />
+                        Nieuw Aanbod Toevoegen
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               )}

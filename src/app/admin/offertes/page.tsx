@@ -39,6 +39,7 @@ import { PlusCircle, MoreHorizontal, Trash2, Pencil, Search } from "lucide-react
 import { AddQuoteDialog } from "@/components/admin/AddQuoteDialog";
 import { EditQuoteDialog } from "@/components/admin/EditQuoteDialog";
 import { toast } from "sonner";
+import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
 
 type Quote = {
   id: string;
@@ -184,11 +185,9 @@ export default function OfferteBeheerPage() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    Laden...
-                  </TableCell>
-                </TableRow>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRowSkeleton key={i} columns={6} />
+                ))
               ) : filteredQuotes.length > 0 ? (
                 filteredQuotes.map((quote) => (
                   <TableRow key={quote.id}>

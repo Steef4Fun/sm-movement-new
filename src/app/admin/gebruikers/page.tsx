@@ -39,6 +39,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { EditUserDialog } from "@/components/admin/EditUserDialog";
+import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
 
 type User = {
   id: string;
@@ -150,11 +151,9 @@ export default function GebruikersBeheerPage() {
             </TableHeader>
             <TableBody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center">
-                    Laden...
-                  </TableCell>
-                </TableRow>
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRowSkeleton key={i} columns={4} />
+                ))
               ) : users.length > 0 ? (
                 users.map((user) => (
                   <TableRow key={user.id} onClick={() => handleRowClick(user.id)} className="cursor-pointer">
