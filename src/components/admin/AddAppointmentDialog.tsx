@@ -69,6 +69,7 @@ export function AddAppointmentDialog({
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
+      customer_email: "",
       notes: "",
     },
   });

@@ -46,6 +46,10 @@ export function AddQuoteDialog({
 }: AddQuoteDialogProps) {
   const form = useForm<QuoteFormValues>({
     resolver: zodResolver(quoteSchema),
+    defaultValues: {
+      customer_email: "",
+      subject: "",
+    },
   });
 
   const onSubmit = async (values: QuoteFormValues) => {
