@@ -1,5 +1,5 @@
 # De naam van de workflow
-name: Deploy SM-Movement to VPS
+name: Deploy Frontend to VPS
 
 # Trigger: deze workflow draait bij elke push naar de 'main' branch
 on:
@@ -24,26 +24,29 @@ jobs:
         run: sudo apt-get install -y sshpass
 
       # Stap 3: Voer de deployment-commando's uit op de VPS
-      - name: Deploy to VPS
+      - name: Deploy Frontend to VPS
         run: |
           # Gebruik sshpass om het wachtwoord veilig door te geven via een secret.
-          # De '-o StrictHostKeyChecking=no' optie voorkomt de 'are you sure' vraag bij de eerste verbinding.
           sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            # Ga naar de juiste projectmap op de server
+            # Stop het script direct als een commando mislukt
+            set -e
+
+            # --- FRONT-END DEPLOYMENT ---
+            echo "--- Starten met Frontend deployment ---"
+            # Ga naar de frontend projectmap op de server
             cd /var/www/sm-movement/
             
-            # Haal de laatste code op van de main branch
+            echo "--> Laatste code ophalen van GitHub..."
             git pull
             
-            # Installeer eventuele nieuwe dependencies
+            echo "--> Dependencies installeren met npm..."
             npm install
             
-            # Bouw de front-end voor productie
+            echo "--> Frontend builden voor productie..."
             npm run build
             
-            # Herstart de back-end met PM2 voor zero-downtime
-            # (Vervang 'sm-movement-backend' als je een andere naam hebt gebruikt)
-            pm2 reload sm-movement-backend
+            echo "--> Frontend applicatie herstarten met PM2..."
+            pm2 restart sm-movement-frontend
             
-            echo "Deployment van SM-Movement is succesvol afgerond."
+            echo "Frontend deployment is succesvol afgerond."
           EOF
