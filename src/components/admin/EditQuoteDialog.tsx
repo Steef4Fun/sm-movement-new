@@ -62,7 +62,10 @@ export function EditQuoteDialog({
 
   useEffect(() => {
     if (quote) {
-      form.reset(quote);
+      form.reset({
+        ...quote,
+        description: quote.description || "",
+      });
     }
   }, [quote, form]);
 
