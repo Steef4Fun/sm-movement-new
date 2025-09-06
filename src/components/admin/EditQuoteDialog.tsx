@@ -32,11 +32,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const quoteSchema = z.object({
   subject: z.string().min(3, "Onderwerp is te kort."),
   amount: z.coerce.number().positive("Bedrag moet een positief getal zijn."),
   status: z.enum(["in afwachting", "geaccepteerd", "geweigerd"]),
+  description: z.string().optional(),
 });
 
 type QuoteFormValues = z.infer<typeof quoteSchema>;
@@ -137,6 +139,23 @@ export function EditQuoteDialog({
                       <SelectItem value="geweigerd">Geweigerd</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Omschrijving</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Voer hier de details van de offerte in..."
+                      className="min-h-[100px]"
+                      {...field}
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

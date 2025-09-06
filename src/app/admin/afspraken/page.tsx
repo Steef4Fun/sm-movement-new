@@ -60,7 +60,7 @@ export default function AfspraakBeheerPage() {
     const { data, error } = await supabase
       .from("appointments")
       .select("*, profiles(first_name, last_name)")
-      .order("created_at", { ascending: false });
+      .order("requested_date", { ascending: true });
 
     if (error) {
       toast.error(`Fout bij ophalen afspraken: ${error.message}`);
@@ -158,7 +158,7 @@ export default function AfspraakBeheerPage() {
               <TableRow>
                 <TableHead>Klant</TableHead>
                 <TableHead>Service</TableHead>
-                <TableHead>Aangevraagde Datum</TableHead>
+                <TableHead>Datum</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead className="text-right">Acties</TableHead>
               </TableRow>
@@ -182,7 +182,7 @@ export default function AfspraakBeheerPage() {
                     </TableCell>
                     <TableCell>
                       {new Date(appointment.requested_date).toLocaleString(
-                        "nl-NL"
+                        "nl-NL", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
                       )}
                     </TableCell>
                     <TableCell>{appointment.status}</TableCell>

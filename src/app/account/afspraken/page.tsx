@@ -34,7 +34,7 @@ export default function AccountAfsprakenPage() {
     const { data, error } = await supabase
       .from("appointments")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("requested_date", { ascending: true });
 
     if (error) {
       console.error("Error fetching appointments:", error);
@@ -61,7 +61,7 @@ export default function AccountAfsprakenPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Service</TableHead>
-              <TableHead>Aangevraagde Datum</TableHead>
+              <TableHead>Datum</TableHead>
               <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
@@ -80,7 +80,7 @@ export default function AccountAfsprakenPage() {
                   </TableCell>
                   <TableCell>
                     {new Date(appointment.requested_date).toLocaleString(
-                      "nl-NL"
+                      "nl-NL", { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }
                     )}
                   </TableCell>
                   <TableCell>{appointment.status}</TableCell>

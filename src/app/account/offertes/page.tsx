@@ -17,6 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type Quote = {
   id: string;
@@ -39,6 +41,7 @@ export default function AccountOffertesPage() {
 
     if (error) {
       console.error("Error fetching quotes:", error);
+      toast.error("Kon offertes niet ophalen.");
     } else if (data) {
       setQuotes(data);
     }
@@ -48,6 +51,20 @@ export default function AccountOffertesPage() {
   useEffect(() => {
     fetchQuotes();
   }, [fetchQuotes]);
+
+  const handleStatusUpdate = async (quoteId: string, newStatus: "geaccepteerd" | "geweigerd") => {
+    const { error } = await supabase
+      .from("offertes")
+      .update({ status: newStatus })
+      .eq("id", quoteId);
+
+    if (error) {
+      toast.error(`Fout bij bijwerken status: ${error.message}`);
+    } else {
+      toast.success(`Offerte ${newStatus}.`);
+      fetchQuotes();
+    }
+  };
 
   return (
     <Card>
@@ -65,12 +82,13 @@ export default function AccountOffertesPage() {
               <TableHead>Bedrag</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Datum</TableHead>
+              <TableHead className="text-right">Acties</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center">
+                <TableCell colSpan={5} className="text-center">
                   Laden...
                 </TableCell>
               </TableRow>
@@ -88,11 +106,23 @@ export default function AccountOffertesPage() {
                   <TableCell>
                     {new Date(quote.created_at).toLocaleDateString("nl-NL")}
                   </TableCell>
+                  <TableCell className="text-right">
+                    {quote.status === 'in afwachting' && (
+                      <div className="flex gap-2 justify-end">
+                        <Button size="sm" onClick={() => handleStatusUpdate(quote.id, 'geaccepteerd')}>
+                          Accepteren
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleStatusUpdate(quote.id, 'geweigerd')}>
+                          Weigeren
+                        </Button>
+                      </div>
+                    )}
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={4} className="text-center">
+                <TableCell colSpan={5} className="text-center">
                   U heeft nog geen offertes.
                 </TableCell>
               </TableRow>

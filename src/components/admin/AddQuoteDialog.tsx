@@ -24,11 +24,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const quoteSchema = z.object({
   customer_email: z.string().email("Voer een geldig e-mailadres in."),
   subject: z.string().min(3, "Onderwerp is te kort."),
   amount: z.coerce.number().positive("Bedrag moet een positief getal zijn."),
+  description: z.string().optional(),
 });
 
 type QuoteFormValues = z.infer<typeof quoteSchema>;
@@ -49,6 +51,7 @@ export function AddQuoteDialog({
     defaultValues: {
       customer_email: "",
       subject: "",
+      description: "",
     },
   });
 
@@ -119,6 +122,23 @@ export function AddQuoteDialog({
                   <FormLabel>Bedrag (€)</FormLabel>
                   <FormControl>
                     <Input type="number" placeholder="500" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Omschrijving</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Voer hier de details van de offerte in..."
+                      className="min-h-[100px]"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

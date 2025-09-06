@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { format } from "date-fns";
+import { format, setHours, setMinutes, setSeconds } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -50,6 +50,7 @@ const appointmentSchema = z.object({
   requested_date: z.date({
     required_error: "Een datum is verplicht.",
   }),
+  time: z.string({ required_error: "Een tijd is verplicht." }),
   notes: z.string().optional(),
 });
 
@@ -71,19 +72,26 @@ export function AddAppointmentDialog({
     defaultValues: {
       customer_email: "",
       notes: "",
+      time: "10:00",
     },
   });
 
   const onSubmit = async (values: AppointmentFormValues) => {
+    const [hours, minutes] = values.time.split(":").map(Number);
+    const combinedDateTime = setSeconds(setMinutes(setHours(values.requested_date, hours), minutes), 0);
+
     const { data, error } = await supabase.functions.invoke(
       "create-appointment",
       {
-        body: values,
+        body: {
+          ...values,
+          requested_date: combinedDateTime.toISOString(),
+        },
       }
     );
 
     if (error || data.error) {
-      toast.error("Fout bij aanmaken afspraak:", error?.message || data.error);
+      toast.error(`Fout bij aanmaken afspraak: ${error?.message || data.error}`);
     } else {
       toast.success("Afspraak succesvol aangemaakt!");
       onAppointmentAdded();
@@ -145,45 +153,60 @@ export function AddAppointmentDialog({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="requested_date"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Voorkeursdatum</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={"outline"}
-                          className={cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value ? (
-                            format(field.value, "PPP")
-                          ) : (
-                            <span>Kies een datum</span>
-                          )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="requested_date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Datum</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? (
+                              format(field.value, "PPP")
+                            ) : (
+                              <span>Kies een datum</span>
+                            )}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="time"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tijd</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="notes"
