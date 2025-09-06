@@ -164,10 +164,9 @@ export default function AfspraakBeheerPage() {
               onSelect={setSelectedDate}
               className="rounded-md"
               modifiers={{ appointments: appointmentDates }}
-              modifiersStyles={{ appointments: {
-                color: 'hsl(var(--primary-foreground))',
-                backgroundColor: 'hsl(var(--primary))'
-              }}}
+              modifiersClassNames={{
+                appointments: 'day-with-appointment',
+              }}
             />
           </CardContent>
         </Card>
