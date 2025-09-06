@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { toast } from "sonner";
 import { format, setHours, setMinutes, setSeconds } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -80,23 +80,17 @@ export function AddAppointmentDialog({
     const [hours, minutes] = values.time.split(":").map(Number);
     const combinedDateTime = setSeconds(setMinutes(setHours(values.requested_date, hours), minutes), 0);
 
-    const { data, error } = await supabase.functions.invoke(
-      "create-appointment",
-      {
-        body: {
-          ...values,
-          requested_date: combinedDateTime.toISOString(),
-        },
-      }
-    );
-
-    if (error || data.error) {
-      toast.error(`Fout bij aanmaken afspraak: ${error?.message || data.error}`);
-    } else {
+    try {
+      await api.createAppointment({
+        ...values,
+        requested_date: combinedDateTime.toISOString(),
+      });
       toast.success("Afspraak succesvol aangemaakt!");
       onAppointmentAdded();
       setIsOpen(false);
       form.reset();
+    } catch (error) {
+      // Error is handled by the API client
     }
   };
 

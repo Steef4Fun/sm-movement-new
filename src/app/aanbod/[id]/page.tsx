@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -34,19 +34,14 @@ export default function ListingDetailPage() {
   const fetchListing = useCallback(async () => {
     if (!id) return;
     setLoading(true);
-    const { data, error } = await supabase
-      .from("listings")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      console.error("Error fetching listing:", error);
-      setListing(null);
-    } else {
+    try {
+      const data = await api.getListingById(id as string);
       setListing(data);
+    } catch (error) {
+      setListing(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [id]);
 
   useEffect(() => {

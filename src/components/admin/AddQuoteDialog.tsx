@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -56,20 +56,14 @@ export function AddQuoteDialog({
   });
 
   const onSubmit = async (values: QuoteFormValues) => {
-    const { data, error } = await supabase.functions.invoke(
-      "create-quote",
-      {
-        body: values,
-      }
-    );
-
-    if (error || data.error) {
-      toast.error(`Fout bij aanmaken offerte: ${error?.message || data.error}`);
-    } else {
+    try {
+      await api.createQuote(values);
       toast.success("Offerte succesvol aangemaakt!");
       onQuoteAdded();
       setIsOpen(false);
       form.reset();
+    } catch (error) {
+      // Error is handled by the API client
     }
   };
 

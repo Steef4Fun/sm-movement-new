@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -36,17 +36,14 @@ export default function AccountAfsprakenPage() {
 
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("appointments")
-      .select("*")
-      .order("requested_date", { ascending: true });
-
-    if (error) {
-      console.error("Error fetching appointments:", error);
-    } else if (data) {
+    try {
+      const data = await api.getAppointments();
       setAppointments(data);
+    } catch (error) {
+      // Error is handled by the API client
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {

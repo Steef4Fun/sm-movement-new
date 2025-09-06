@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -56,14 +56,14 @@ export default function GebruikersBeheerPage() {
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase.functions.invoke("get-users");
-
-    if (error) {
-      toast.error(`Fout bij ophalen gebruikers: ${error.message}`);
-    } else {
+    try {
+      const data = await api.getAllUsers();
       setUsers(data);
+    } catch (error) {
+      // Error is handled by the API client
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -82,18 +82,16 @@ export default function GebruikersBeheerPage() {
 
   const confirmDelete = async () => {
     if (!selectedUser) return;
-    const { error } = await supabase.functions.invoke("delete-user", {
-      body: { userId: selectedUser.id },
-    });
-
-    if (error) {
-      toast.error(`Fout bij verwijderen: ${error.message}`);
-    } else {
+    try {
+      await api.deleteUser(selectedUser.id);
       toast.success("Gebruiker succesvol verwijderd.");
       fetchUsers();
+    } catch (error) {
+      // Error is handled by the API client
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setSelectedUser(null);
     }
-    setIsDeleteDialogOpen(false);
-    setSelectedUser(null);
   };
 
   return (

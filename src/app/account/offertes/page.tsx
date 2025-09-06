@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import {
   Card,
   CardContent,
@@ -38,18 +38,14 @@ export default function AccountOffertesPage() {
 
   const fetchQuotes = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("offertes")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching quotes:", error);
-      toast.error("Kon offertes niet ophalen.");
-    } else if (data) {
+    try {
+      const data = await api.getQuotes();
       setQuotes(data);
+    } catch (error) {
+      toast.error("Kon offertes niet ophalen.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -57,16 +53,12 @@ export default function AccountOffertesPage() {
   }, [fetchQuotes]);
 
   const handleStatusUpdate = async (quoteId: string, newStatus: "geaccepteerd" | "geweigerd") => {
-    const { error } = await supabase
-      .from("offertes")
-      .update({ status: newStatus })
-      .eq("id", quoteId);
-
-    if (error) {
-      toast.error(`Fout bij bijwerken status: ${error.message}`);
-    } else {
+    try {
+      await api.updateUserQuoteStatus(quoteId, newStatus);
       toast.success(`Offerte ${newStatus}.`);
       fetchQuotes();
+    } catch (error) {
+      // Error is handled by the API client
     }
   };
 

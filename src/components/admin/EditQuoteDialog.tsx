@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { toast } from "sonner";
 import { useEffect } from "react";
 
@@ -70,17 +70,13 @@ export function EditQuoteDialog({
   }, [quote, form]);
 
   const onSubmit = async (values: QuoteFormValues) => {
-    const { error } = await supabase
-      .from("offertes")
-      .update(values)
-      .eq("id", quote.id);
-
-    if (error) {
-      toast.error(`Fout bij bijwerken offerte: ${error.message}`);
-    } else {
+    try {
+      await api.updateQuote(quote.id, values);
       toast.success("Offerte succesvol bijgewerkt!");
       onQuoteUpdated();
       setIsOpen(false);
+    } catch (error) {
+      // Error is handled by the API client
     }
   };
 

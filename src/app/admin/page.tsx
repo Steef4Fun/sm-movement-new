@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { profile } = useAuth();
 
   return (
     <div>
@@ -26,10 +26,10 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent>
           <p>
-            <strong>Email:</strong> {user?.email}
+            <strong>Email:</strong> {profile?.email}
           </p>
           <p>
-            <strong>Gebruiker ID:</strong> {user?.id}
+            <strong>Gebruiker ID:</strong> {profile?.id}
           </p>
         </CardContent>
       </Card>

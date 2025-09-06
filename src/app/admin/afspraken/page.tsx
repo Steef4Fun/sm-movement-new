@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -44,7 +44,7 @@ type Appointment = {
   service_type: string;
   requested_date: string;
   status: string;
-  profiles: { first_name: string | null; last_name: string | null } | null;
+  user: { first_name: string | null; last_name: string | null } | null;
 };
 
 export default function AfspraakBeheerPage() {
@@ -57,17 +57,14 @@ export default function AfspraakBeheerPage() {
 
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("appointments")
-      .select("*, profiles(first_name, last_name)")
-      .order("requested_date", { ascending: true });
-
-    if (error) {
-      toast.error(`Fout bij ophalen afspraken: ${error.message}`);
-    } else if (data) {
-      setAppointments(data as Appointment[]);
+    try {
+      const data = await api.getAppointments();
+      setAppointments(data);
+    } catch (error) {
+      // Error is handled by the API client
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -86,19 +83,16 @@ export default function AfspraakBeheerPage() {
 
   const confirmDelete = async () => {
     if (!selectedAppointment) return;
-    const { error } = await supabase
-      .from("appointments")
-      .delete()
-      .eq("id", selectedAppointment.id);
-
-    if (error) {
-      toast.error(`Fout bij verwijderen: ${error.message}`);
-    } else {
+    try {
+      await api.deleteAppointment(selectedAppointment.id);
       toast.success("Afspraak succesvol verwijderd.");
       fetchAppointments();
+    } catch (error) {
+      // Error is handled by the API client
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setSelectedAppointment(null);
     }
-    setIsDeleteDialogOpen(false);
-    setSelectedAppointment(null);
   };
 
   return (
@@ -174,8 +168,8 @@ export default function AfspraakBeheerPage() {
                 appointments.map((appointment) => (
                   <TableRow key={appointment.id}>
                     <TableCell>
-                      {appointment.profiles?.first_name || "Onbekende"}{" "}
-                      {appointment.profiles?.last_name || "Klant"}
+                      {appointment.user?.first_name || "Onbekende"}{" "}
+                      {appointment.user?.last_name || "Klant"}
                     </TableCell>
                     <TableCell className="font-medium">
                       {appointment.service_type}

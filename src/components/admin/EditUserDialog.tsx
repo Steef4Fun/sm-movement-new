@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { toast } from "sonner";
 import { useEffect } from "react";
 
@@ -62,16 +62,13 @@ export function EditUserDialog({
   }, [user, form]);
 
   const onSubmit = async (values: UserFormValues) => {
-    const { data, error } = await supabase.functions.invoke("update-user-role", {
-      body: { userId: user.id, newRole: values.role },
-    });
-
-    if (error || data.error) {
-      toast.error(`Fout bij bijwerken rol: ${error?.message || data.error}`);
-    } else {
+    try {
+      await api.updateUserRole(user.id, values.role);
       toast.success("Gebruikersrol succesvol bijgewerkt!");
       onUserUpdated();
       setIsOpen(false);
+    } catch (error) {
+      // Error is handled by the API client
     }
   };
 

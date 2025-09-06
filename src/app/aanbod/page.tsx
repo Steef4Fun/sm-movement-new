@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -39,18 +39,14 @@ export default function AanbodPage() {
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("listings")
-      .select("*")
-      .eq("status", "beschikbaar")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching listings:", error);
-    } else if (data) {
+    try {
+      const data = await api.getListings();
       setListings(data);
+    } catch (error) {
+      // Error is handled by the API client
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {

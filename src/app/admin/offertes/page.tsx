@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -45,7 +45,7 @@ type Quote = {
   amount: number;
   status: string;
   created_at: string;
-  profiles: { first_name: string | null; last_name: string | null } | null;
+  user: { first_name: string | null; last_name: string | null } | null;
 };
 
 export default function OfferteBeheerPage() {
@@ -58,17 +58,14 @@ export default function OfferteBeheerPage() {
 
   const fetchQuotes = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("offertes")
-      .select("*, profiles(first_name, last_name)")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      toast.error(`Fout bij ophalen offertes: ${error.message}`);
-    } else if (data) {
-      setQuotes(data as Quote[]);
+    try {
+      const data = await api.getQuotes();
+      setQuotes(data);
+    } catch (error) {
+      // Error is handled by the API client
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -87,19 +84,16 @@ export default function OfferteBeheerPage() {
 
   const confirmDelete = async () => {
     if (!selectedQuote) return;
-    const { error } = await supabase
-      .from("offertes")
-      .delete()
-      .eq("id", selectedQuote.id);
-
-    if (error) {
-      toast.error(`Fout bij verwijderen: ${error.message}`);
-    } else {
+    try {
+      await api.deleteQuote(selectedQuote.id);
       toast.success("Offerte succesvol verwijderd.");
       fetchQuotes();
+    } catch (error) {
+      // Error is handled by the API client
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setSelectedQuote(null);
     }
-    setIsDeleteDialogOpen(false);
-    setSelectedQuote(null);
   };
 
   return (
@@ -176,8 +170,8 @@ export default function OfferteBeheerPage() {
                 quotes.map((quote) => (
                   <TableRow key={quote.id}>
                     <TableCell>
-                      {quote.profiles?.first_name || "Onbekende"}{" "}
-                      {quote.profiles?.last_name || "Klant"}
+                      {quote.user?.first_name || "Onbekende"}{" "}
+                      {quote.user?.last_name || "Klant"}
                     </TableCell>
                     <TableCell className="font-medium">{quote.subject}</TableCell>
                     <TableCell>

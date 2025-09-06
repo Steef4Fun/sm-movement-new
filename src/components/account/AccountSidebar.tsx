@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { User, Calendar, FileText, LogOut } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/AuthContext";
 
 export function AccountSidebar() {
   const pathname = usePathname();
-  const router = useRouter();
+  const { logout } = useAuth();
 
   const navItems = [
     { href: "/account/profiel", icon: User, label: "Mijn Profiel" },
@@ -17,9 +17,8 @@ export function AccountSidebar() {
     { href: "/account/offertes", icon: FileText, label: "Mijn Offertes" },
   ];
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
+  const handleLogout = () => {
+    logout();
   };
 
   return (

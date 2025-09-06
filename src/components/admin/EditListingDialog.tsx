@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { toast } from "sonner";
 import { useEffect } from "react";
 
@@ -68,17 +68,13 @@ export function EditListingDialog({
   }, [listing, form]);
 
   const onSubmit = async (values: ListingFormValues) => {
-    const { error } = await supabase
-      .from("listings")
-      .update(values)
-      .eq("id", listing.id);
-
-    if (error) {
-      toast.error(`Er is een fout opgetreden: ${error.message}`);
-    } else {
+    try {
+      await api.updateListing(listing.id, values);
       toast.success("Aanbod succesvol bijgewerkt!");
       onListingUpdated();
       setIsOpen(false);
+    } catch (error) {
+      // Error is handled by the API client
     }
   };
 

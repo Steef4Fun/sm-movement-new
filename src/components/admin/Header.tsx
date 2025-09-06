@@ -12,18 +12,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useRouter } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import Link from "next/link";
 
 export function Header() {
-  const { user } = useAuth();
-  const router = useRouter();
+  const { profile, logout } = useAuth();
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
+  const handleLogout = () => {
+    logout();
   };
 
   return (
@@ -53,7 +49,7 @@ export function Header() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>
-            {user?.email || "My Account"}
+            {profile?.email || "My Account"}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
