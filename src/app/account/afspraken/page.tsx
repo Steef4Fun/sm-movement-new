@@ -20,6 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ClientOnly } from "@/components/ClientOnly";
 
 type Appointment = {
   id: string;
@@ -107,16 +108,18 @@ export default function AccountAfsprakenPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {new Date(appointment.requested_date).toLocaleString(
-                        "nl-NL",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
-                      )}
+                      <ClientOnly>
+                        {new Date(appointment.requested_date).toLocaleString(
+                          "nl-NL",
+                          {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
+                      </ClientOnly>
                     </TableCell>
                   </TableRow>
                 ];
