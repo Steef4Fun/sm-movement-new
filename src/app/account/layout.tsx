@@ -13,16 +13,16 @@ export default function AccountLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!isLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [user, isLoading, router]);
+  }, [isAuthenticated, isLoading, router]);
 
-  if (isLoading || !user) {
+  if (isLoading || !isAuthenticated) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

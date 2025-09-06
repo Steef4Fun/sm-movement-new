@@ -1,0 +1,33 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main  # Of de branch die je wilt gebruiken voor deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    # Voeg hier eventuele build-stappen toe als je die hebt
+    # - name: Build App
+    #   run: |
+    #     npm install
+    #     npm run build
+
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}  # We gebruiken hier het wachtwoord
+        port: ${{ secrets.PORT }}
+        script: |
+          cd ${{ secrets.APP_DIR }}
+          git pull origin main
+          # Voeg hier commando's toe die na het deployen uitgevoerd moeten worden
+          # Bijvoorbeeld: npm install, pm2 restart, etc.

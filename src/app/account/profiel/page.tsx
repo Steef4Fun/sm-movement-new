@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +34,7 @@ const profileSchema = z.object({
 type ProfileFormValues = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const { user, profile, isLoading } = useAuth();
+  const { profile, isLoading, reloadProfile } = useAuth();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -54,17 +54,12 @@ export default function ProfilePage() {
   }, [profile, form]);
 
   const onSubmit = async (values: ProfileFormValues) => {
-    if (!user) return;
-
-    const { error } = await supabase
-      .from("profiles")
-      .update(values)
-      .eq("id", user.id);
-
-    if (error) {
-      toast.error(`Fout bij het bijwerken van profiel: ${error.message}`);
-    } else {
+    try {
+      await api.updateProfile(values);
       toast.success("Profiel succesvol bijgewerkt!");
+      reloadProfile(); // Reload profile in context
+    } catch (error) {
+      // Error toast is handled by api client
     }
   };
 

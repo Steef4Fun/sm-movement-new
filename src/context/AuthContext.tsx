@@ -1,92 +1,112 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { Session, User } from "@supabase/supabase-js";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import * as api from "@/lib/api";
+import { toast } from "sonner";
 
-// Define a type for our user profile
 type Profile = {
   id: string;
   role: string;
   first_name: string | null;
   last_name: string | null;
+  email: string;
 };
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
   profile: Profile | null;
+  isAuthenticated: boolean;
   isLoading: boolean;
+  login: (credentials: any) => Promise<void>;
+  register: (userData: any) => Promise<void>;
+  logout: () => void;
+  reloadProfile: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  user: null,
-  session: null,
   profile: null,
+  isAuthenticated: false,
   isLoading: true,
+  login: async () => {},
+  register: async () => {},
+  logout: () => {},
+  reloadProfile: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-  useEffect(() => {
-    const getSessionAndProfile = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error("Error getting session:", error);
-        setIsLoading(false);
-        return;
-      }
-
-      if (session?.user) {
-        const { data: userProfile, error: profileError } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-
-        if (profileError) {
-          console.error("Error fetching profile:", profileError);
-        } else {
-          setProfile(userProfile);
-        }
-      }
-      
-      setSession(session);
-      setUser(session?.user ?? null);
+  const fetchProfile = useCallback(async () => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
       setIsLoading(false);
-    };
+      return;
+    }
 
-    getSessionAndProfile();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        if (session?.user) {
-            const { data: userProfile } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("id", session.user.id)
-              .single();
-            setProfile(userProfile);
-        } else {
-            setProfile(null);
-        }
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsLoading(false);
-      }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    try {
+      const userProfile = await api.getProfile();
+      setProfile(userProfile);
+    } catch (error) {
+      console.error("Failed to fetch profile, logging out.", error);
+      localStorage.removeItem("authToken");
+      setProfile(null);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const login = async (credentials: any) => {
+    try {
+      const { token } = await api.loginUser(credentials);
+      localStorage.setItem("authToken", token);
+      await fetchProfile();
+      toast.success("Succesvol ingelogd!");
+      router.push("/");
+    } catch (error) {
+      console.error("Login failed", error);
+      // Error toast is handled by the api client
+    }
+  };
+
+  const register = async (userData: any) => {
+    try {
+      await api.registerUser(userData);
+      toast.success("Registratie succesvol! U kunt nu inloggen.");
+      router.push("/login");
+    } catch (error) {
+      console.error("Registration failed", error);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("authToken");
+    setProfile(null);
+    toast.info("U bent uitgelogd.");
+    router.push("/");
+  };
+
+  const reloadProfile = () => {
+    fetchProfile();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, profile, isLoading }}>
+    <AuthContext.Provider
+      value={{
+        profile,
+        isAuthenticated: !!profile,
+        isLoading,
+        login,
+        register,
+        logout,
+        reloadProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

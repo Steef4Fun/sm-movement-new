@@ -3,8 +3,7 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/context/AuthContext";
+import * as api from "@/lib/api";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -54,8 +53,6 @@ export function AddListingDialog({
   setIsOpen,
   onListingAdded,
 }: AddListingDialogProps) {
-  const { user } = useAuth();
-
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
     defaultValues: {
@@ -65,25 +62,14 @@ export function AddListingDialog({
   });
 
   const onSubmit = async (values: ListingFormValues) => {
-    if (!user) {
-      toast.error("U moet ingelogd zijn om een aanbod toe te voegen.");
-      return;
-    }
-
-    const { error } = await supabase.from("listings").insert([
-      {
-        ...values,
-        user_id: user.id,
-      },
-    ]);
-
-    if (error) {
-      toast.error(`Er is een fout opgetreden: ${error.message}`);
-    } else {
+    try {
+      await api.createListing(values);
       toast.success("Aanbod succesvol toegevoegd!");
       onListingAdded();
       setIsOpen(false);
       form.reset();
+    } catch (error) {
+      // Error toast handled by api client
     }
   };
 

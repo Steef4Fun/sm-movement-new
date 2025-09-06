@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import * as api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -58,17 +58,14 @@ export default function AanbodBeheerPage() {
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("listings")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      toast.error(`Fout bij ophalen aanbod: ${error.message}`);
-    } else if (data) {
+    try {
+      const data = await api.getListings();
       setListings(data);
+    } catch (error) {
+      // Error toast handled by api client
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -87,19 +84,16 @@ export default function AanbodBeheerPage() {
 
   const confirmDelete = async () => {
     if (!selectedListing) return;
-    const { error } = await supabase
-      .from("listings")
-      .delete()
-      .eq("id", selectedListing.id);
-
-    if (error) {
-      toast.error(`Fout bij verwijderen: ${error.message}`);
-    } else {
+    try {
+      await api.deleteListing(selectedListing.id);
       toast.success("Item succesvol verwijderd.");
       fetchListings();
+    } catch (error) {
+      // Error toast handled by api client
+    } finally {
+      setIsDeleteDialogOpen(false);
+      setSelectedListing(null);
     }
-    setIsDeleteDialogOpen(false);
-    setSelectedListing(null);
   };
 
   return (
