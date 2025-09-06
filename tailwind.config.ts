@@ -9,6 +9,26 @@ export default {
   ],
   theme: {
   	extend: {
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1.4' }], // 12px
+        'sm': ['0.9375rem', { lineHeight: '1.5' }], // 15px
+        'base': ['1.125rem', { lineHeight: '1.5' }], // 18px
+        'lg': ['1.5rem', { lineHeight: '1.2' }], // 24px
+        'xl': ['1.875rem', { lineHeight: '1.2' }], // 30px
+        '2xl': ['2.3125rem', { lineHeight: '1.2' }], // 37px
+        '3xl': ['2.875rem', { lineHeight: '1.2' }], // 46px
+        '4xl': ['3.625rem', { lineHeight: '1.2' }], // 58px
+      },
+      lineHeight: {
+        'tight': '1.2',
+        'snug': '1.4',
+        'normal': '1.5',
+      },
+      letterSpacing: {
+        'tight': '-0.02em',
+        'normal': '0em',
+        'wide': '0.05em',
+      },
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
@@ -43,28 +63,12 @@ export default {
   			border: 'hsl(var(--border))',
   			input: 'hsl(var(--input))',
   			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			},
-  			sidebar: {
-  				DEFAULT: 'hsl(var(--sidebar-background))',
-  				foreground: 'hsl(var(--sidebar-foreground))',
-  				primary: 'hsl(var(--sidebar-primary))',
-  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-  				accent: 'hsl(var(--sidebar-accent))',
-  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-  				border: 'hsl(var(--sidebar-border))',
-  				ring: 'hsl(var(--sidebar-ring))'
-  			}
   		},
   		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+        'sm': '4px',
+        'md': '8px',
+        'lg': '12px',
+        'xl': '16px',
   		},
   		keyframes: {
   			'accordion-down': {
