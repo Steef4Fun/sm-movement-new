@@ -44,8 +44,11 @@ export const updateProfile = (profileData: any) => request('/users/profile', { m
 
 // --- Admin: Users ---
 export const getAllUsers = () => request('/users');
+export const getUserById = (userId: string) => request(`/users/${userId}`);
 export const updateUserRole = (userId: string, role: string) => request(`/users/${userId}/role`, { method: 'PUT', body: JSON.stringify({ role }) });
 export const deleteUser = (userId: string) => request(`/users/${userId}`, { method: 'DELETE' });
+export const getAppointmentsByUserId = (userId: string) => request(`/users/${userId}/appointments`);
+export const getQuotesByUserId = (userId: string) => request(`/users/${userId}/quotes`);
 
 // --- Listings ---
 export const getListings = () => request('/listings');

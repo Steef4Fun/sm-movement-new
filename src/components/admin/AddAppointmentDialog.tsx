@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { format, setHours, setMinutes, setSeconds } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -60,12 +61,14 @@ interface AddAppointmentDialogProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
   onAppointmentAdded: () => void;
+  initialDate?: Date;
 }
 
 export function AddAppointmentDialog({
   isOpen,
   setIsOpen,
   onAppointmentAdded,
+  initialDate,
 }: AddAppointmentDialogProps) {
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
@@ -75,6 +78,12 @@ export function AddAppointmentDialog({
       time: "10:00",
     },
   });
+
+  useEffect(() => {
+    if (initialDate) {
+      form.setValue("requested_date", initialDate);
+    }
+  }, [initialDate, form]);
 
   const onSubmit = async (values: AppointmentFormValues) => {
     const [hours, minutes] = values.time.split(":").map(Number);
