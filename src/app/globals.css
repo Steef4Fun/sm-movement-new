@@ -5,16 +5,16 @@
 @layer base {
   :root {
     /* New Color Palette: Light Mode */
-    --color-primary-50: 210 40% 98%;
-    --color-primary-100: 210 40% 96.1%;
-    --color-primary-200: 210 40% 90%;
-    --color-primary-300: 210 40% 80%;
-    --color-primary-400: 210 40% 65%;
-    --color-primary-500: 210 40% 50%;
-    --color-primary-600: 210 40% 45%;
-    --color-primary-700: 210 40% 40%;
-    --color-primary-800: 210 40% 30%;
-    --color-primary-900: 210 40% 20%;
+    --color-primary-50: 40 80% 96%;
+    --color-primary-100: 40 80% 92%;
+    --color-primary-200: 40 80% 84%;
+    --color-primary-300: 40 80% 76%;
+    --color-primary-400: 40 80% 60%;
+    --color-primary-500: 40 80% 50%;
+    --color-primary-600: 40 80% 40%;
+    --color-primary-700: 40 80% 35%;
+    --color-primary-800: 40 80% 30%;
+    --color-primary-900: 40 80% 25%;
 
     --color-neutral-0: 0 0% 100%;
     --color-neutral-50: 240 5% 96%;
@@ -57,16 +57,16 @@
 
   .dark {
     /* New Color Palette: Dark Mode */
-    --color-primary-50: 210 40% 10%;
-    --color-primary-100: 210 40% 15%;
-    --color-primary-200: 210 40% 20%;
-    --color-primary-300: 210 40% 30%;
-    --color-primary-400: 210 40% 40%;
-    --color-primary-500: 210 40% 50%;
-    --color-primary-600: 210 40% 60%;
-    --color-primary-700: 210 40% 70%;
-    --color-primary-800: 210 40% 80%;
-    --color-primary-900: 210 40% 90%;
+    --color-primary-50: 40 80% 10%;
+    --color-primary-100: 40 80% 15%;
+    --color-primary-200: 40 80% 20%;
+    --color-primary-300: 40 80% 28%;
+    --color-primary-400: 40 80% 36%;
+    --color-primary-500: 40 80% 50%;
+    --color-primary-600: 40 80% 60%;
+    --color-primary-700: 40 80% 70%;
+    --color-primary-800: 40 80% 80%;
+    --color-primary-900: 40 80% 90%;
 
     /* Shadcn/UI Variable Mapping */
     --background: var(--color-neutral-950);
