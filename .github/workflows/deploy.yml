@@ -1,33 +1,49 @@
-name: Deploy to VPS
+# De naam van de workflow
+name: Deploy SM-Movement to VPS
 
+# Trigger: deze workflow draait bij elke push naar de 'main' branch
 on:
   push:
     branches:
-      - main  # Of de branch die je wilt gebruiken voor deployment
+      - main
 
+# Taken die uitgevoerd moeten worden
 jobs:
   deploy:
+    # De virtuele machine waarop de actie draait
     runs-on: ubuntu-latest
 
+    # De stappen van de taak
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Stap 1: Haal de code van de repository op
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # Voeg hier eventuele build-stappen toe als je die hebt
-    # - name: Build App
-    #   run: |
-    #     npm install
-    #     npm run build
+      # Stap 2: Installeer sshpass (nodig voor wachtwoord-authenticatie)
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
 
-    - name: Deploy to VPS
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}  # We gebruiken hier het wachtwoord
-        port: ${{ secrets.PORT }}
-        script: |
-          cd ${{ secrets.APP_DIR }}
-          git pull origin main
-          # Voeg hier commando's toe die na het deployen uitgevoerd moeten worden
-          # Bijvoorbeeld: npm install, pm2 restart, etc.
+      # Stap 3: Voer de deployment-commando's uit op de VPS
+      - name: Deploy to VPS
+        run: |
+          # Gebruik sshpass om het wachtwoord veilig door te geven via een secret.
+          # De '-o StrictHostKeyChecking=no' optie voorkomt de 'are you sure' vraag bij de eerste verbinding.
+          sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            # Ga naar de juiste projectmap op de server
+            cd /var/www/sm-movement/
+            
+            # Haal de laatste code op van de main branch
+            git pull
+            
+            # Installeer eventuele nieuwe dependencies
+            npm install
+            
+            # Bouw de front-end voor productie
+            npm run build
+            
+            # Herstart de back-end met PM2 voor zero-downtime
+            # (Vervang 'sm-movement-backend' als je een andere naam hebt gebruikt)
+            pm2 reload sm-movement-backend
+            
+            echo "Deployment van SM-Movement is succesvol afgerond."
+          EOF
