@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import * as api from "@/lib/api";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Car, Ship, Search } from "lucide-react";
+import { Car, Ship, Search, XCircle } from "lucide-react";
 import Link from "next/link";
 import { ListingCardSkeleton } from "@/components/skeletons/ListingCardSkeleton";
 
@@ -32,11 +32,15 @@ type Listing = {
   mileage: number | null;
   sailing_hours: number | null;
   price: number;
+  created_at: string;
 };
 
 export default function AanbodPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState("all");
+  const [sortBy, setSortBy] = useState("newest");
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -53,6 +57,43 @@ export default function AanbodPage() {
   useEffect(() => {
     fetchListings();
   }, [fetchListings]);
+
+  const filteredListings = useMemo(() => {
+    let result = [...listings];
+
+    if (searchQuery) {
+      result = result.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (selectedType !== "all") {
+      result = result.filter((item) =>
+        selectedType === "car" ? item.type === "Auto" : item.type === "Boot"
+      );
+    }
+
+    switch (sortBy) {
+      case "price-asc":
+        result.sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        result.sort((a, b) => b.price - a.price);
+        break;
+      case "newest":
+      default:
+        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+    }
+
+    return result;
+  }, [listings, searchQuery, selectedType, sortBy]);
+
+  const resetFilters = () => {
+    setSearchQuery("");
+    setSelectedType("all");
+    setSortBy("newest");
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -76,7 +117,7 @@ export default function AanbodPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {/* Filter Bar */}
             <div className="mb-12 p-6 border rounded-lg bg-card">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 <div className="space-y-2">
                   <label htmlFor="search" className="text-sm font-medium">
                     Zoekterm
@@ -87,6 +128,8 @@ export default function AanbodPage() {
                       id="search"
                       placeholder="Bijv. Audi RS6"
                       className="pl-10"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
                     />
                   </div>
                 </div>
@@ -94,9 +137,9 @@ export default function AanbodPage() {
                   <label htmlFor="type" className="text-sm font-medium">
                     Type
                   </label>
-                  <Select>
+                  <Select value={selectedType} onValueChange={setSelectedType}>
                     <SelectTrigger id="type">
-                      <SelectValue placeholder="Alles" />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Alles</SelectItem>
@@ -109,9 +152,9 @@ export default function AanbodPage() {
                   <label htmlFor="sort" className="text-sm font-medium">
                     Sorteer op
                   </label>
-                  <Select>
+                  <Select value={sortBy} onValueChange={setSortBy}>
                     <SelectTrigger id="sort">
-                      <SelectValue placeholder="Nieuwste eerst" />
+                      <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="newest">Nieuwste eerst</SelectItem>
@@ -124,7 +167,6 @@ export default function AanbodPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button className="w-full">Zoeken</Button>
               </div>
             </div>
 
@@ -135,9 +177,9 @@ export default function AanbodPage() {
                   <ListingCardSkeleton key={i} />
                 ))}
               </div>
-            ) : listings.length > 0 ? (
+            ) : filteredListings.length > 0 ? (
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {listings.map((item) => (
+                {filteredListings.map((item) => (
                   <Card
                     key={item.id}
                     className="overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col hover:-translate-y-1"
@@ -183,13 +225,15 @@ export default function AanbodPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-16">
+              <div className="text-center py-16 flex flex-col items-center">
+                <XCircle className="h-16 w-16 text-muted-foreground mb-4" />
                 <h2 className="text-2xl font-bold tracking-tight">
-                  Geen aanbod gevonden
+                  Geen resultaten gevonden
                 </h2>
-                <p className="mt-4 text-muted-foreground">
-                  Onze showroom is momenteel leeg. Kom snel terug!
+                <p className="mt-2 text-muted-foreground mb-6">
+                  Probeer uw zoekopdracht aan te passen.
                 </p>
+                <Button onClick={resetFilters}>Reset filters</Button>
               </div>
             )}
           </div>
