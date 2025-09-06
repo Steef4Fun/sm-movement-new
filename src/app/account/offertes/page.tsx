@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, Fragment } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Card,
@@ -102,9 +102,9 @@ export default function AccountOffertesPage() {
                 </TableCell>
               </TableRow>
             ) : quotes.length > 0 ? (
-              quotes.map((quote) => (
-                <Fragment key={quote.id}>
-                  <TableRow onClick={() => toggleQuote(quote.id)} className="cursor-pointer">
+              quotes.flatMap((quote) => {
+                const rows = [
+                  <TableRow key={quote.id} onClick={() => toggleQuote(quote.id)} className="cursor-pointer">
                     <TableCell>
                       <ChevronDown className={cn("h-4 w-4 transition-transform", openQuoteId === quote.id && "rotate-180")} />
                     </TableCell>
@@ -132,8 +132,11 @@ export default function AccountOffertesPage() {
                       )}
                     </TableCell>
                   </TableRow>
-                  {openQuoteId === quote.id && (
-                    <TableRow>
+                ];
+
+                if (openQuoteId === quote.id) {
+                  rows.push(
+                    <TableRow key={`${quote.id}-details`}>
                       <TableCell colSpan={6} className="p-0">
                         <div className="p-4 bg-muted/50">
                           <h4 className="font-semibold mb-2">Omschrijving</h4>
@@ -143,9 +146,11 @@ export default function AccountOffertesPage() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  )}
-                </Fragment>
-              ))
+                  );
+                }
+                
+                return rows;
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={6} className="text-center">
