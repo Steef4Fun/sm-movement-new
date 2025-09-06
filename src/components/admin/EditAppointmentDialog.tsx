@@ -85,10 +85,13 @@ export function EditAppointmentDialog({
     const [hours, minutes] = values.time.split(":").map(Number);
     const combinedDateTime = setSeconds(setMinutes(setHours(values.requested_date, hours), minutes), 0);
 
+    // Verwijder 'time' en de oude 'requested_date' uit de te updaten data
+    const { time, requested_date, ...updateData } = values;
+
     const { error } = await supabase
       .from("appointments")
       .update({
-        ...values,
+        ...updateData,
         requested_date: combinedDateTime.toISOString(),
       })
       .eq("id", appointment.id);
