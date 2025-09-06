@@ -46,11 +46,13 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ error: "Missing required fields" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const { data: customerData, error: customerError } = await supabaseAdmin.auth.admin.getUserByEmail(customer_email);
-    if (customerError || !customerData.user) {
+    const { data: customerId, error: rpcError } = await supabaseAdmin
+      .rpc('get_user_id_by_email', { email_text: customer_email });
+
+    if (rpcError || !customerId) {
+      console.error("Customer lookup RPC error:", rpcError);
       return new Response(JSON.stringify({ error: "Customer not found" }), { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const customerId = customerData.user.id;
 
     // Ensure a profile exists for the customer
     const { data: profile, error: profileError } = await supabaseAdmin
