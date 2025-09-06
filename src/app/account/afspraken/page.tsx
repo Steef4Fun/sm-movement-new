@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, Fragment } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Card,
@@ -82,9 +82,10 @@ export default function AccountAfsprakenPage() {
                 </TableCell>
               </TableRow>
             ) : appointments.length > 0 ? (
-              appointments.map((appointment) => (
-                <Fragment key={appointment.id}>
+              appointments.flatMap((appointment) => {
+                const rows = [
                   <TableRow
+                    key={appointment.id}
                     onClick={() => toggleAppointment(appointment.id)}
                     className={cn(
                       "cursor-pointer",
@@ -121,8 +122,11 @@ export default function AccountAfsprakenPage() {
                       )}
                     </TableCell>
                   </TableRow>
-                  {openAppointmentId === appointment.id && (
-                    <TableRow>
+                ];
+
+                if (openAppointmentId === appointment.id) {
+                  rows.push(
+                    <TableRow key={`${appointment.id}-details`}>
                       <TableCell colSpan={3} className="p-0">
                         <div className="p-4 bg-muted/50">
                           <h4 className="font-semibold mb-2">Opmerkingen</h4>
@@ -132,9 +136,11 @@ export default function AccountAfsprakenPage() {
                         </div>
                       </TableCell>
                     </TableRow>
-                  )}
-                </Fragment>
-              ))
+                  );
+                }
+
+                return rows;
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={3} className="text-center">
