@@ -26,7 +26,9 @@ jobs:
       # Stap 3: Voer de deployment-commando's uit op de VPS
       - name: Deploy Frontend to VPS
         run: |
-          sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking-no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          # --- DE FIX IS HIER ---
+          # De '-o' optie heeft een '=' en een spatie nodig
+          sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
 
             cd /var/www/sm-movement/
