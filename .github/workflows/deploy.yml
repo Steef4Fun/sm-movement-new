@@ -26,16 +26,20 @@ jobs:
       # Stap 3: Voer de deployment-commando's uit op de VPS
       - name: Deploy Frontend to VPS
         run: |
-          sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+          sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking-no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
 
             cd /var/www/sm-movement/
             
             git pull
-            npm install
-            npm run build
-
+            
+            # Gebruik pnpm, de package manager die dit project verwacht
+            pnpm install
+            
+            pnpm run build
+            
+            # Herstart de app via het stabiele ecosystem.config.js bestand
             pm2 restart ecosystem.config.js
             
-            echo "Frontend deployment is succesvol afgerond."
+            echo "Frontend deployment is succesvol afgerond met pnpm."
           EOF
