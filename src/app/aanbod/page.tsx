@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -18,35 +20,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Car, Ship, Search } from "lucide-react";
+import { Car, Ship, Search, Loader2 } from "lucide-react";
 import Link from "next/link";
 
-// Placeholder data
-const placeholderListings = [
-  {
-    type: "Auto",
-    name: "Audi RS6 Avant",
-    year: 2023,
-    mileage: "12.000 km",
-    price: "€ 185.000",
-  },
-  {
-    type: "Boot",
-    name: "VanDutch 40",
-    year: 2022,
-    hours: "80 vaaruren",
-    price: "€ 550.000",
-  },
-  {
-    type: "Auto",
-    name: "Porsche 911 GT3",
-    year: 2024,
-    mileage: "1.500 km",
-    price: "€ 310.000",
-  },
-];
+type Listing = {
+  id: string;
+  type: "Auto" | "Boot";
+  name: string;
+  year: number | null;
+  mileage: number | null;
+  sailing_hours: number | null;
+  price: number;
+};
 
 export default function AanbodPage() {
+  const [listings, setListings] = useState<Listing[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchListings = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from("listings")
+      .select("*")
+      .eq("status", "beschikbaar")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching listings:", error);
+    } else if (data) {
+      setListings(data);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -122,54 +132,67 @@ export default function AanbodPage() {
             </div>
 
             {/* Listings Grid */}
-            <div className="text-center">
-              <h2 className="text-3xl font-bold tracking-tight">
-                Binnenkort Beschikbaar
-              </h2>
-              <p className="mt-4 text-muted-foreground">
-                Onze showroom wordt momenteel gevuld. Hieronder vindt u een
-                voorproefje van wat u kunt verwachten.
-              </p>
-            </div>
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mt-12">
-              {placeholderListings.map((item, index) => (
-                <Card
-                  key={index}
-                  className="overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col"
-                >
-                  <CardHeader className="p-0">
-                    <div className="aspect-video bg-secondary flex items-center justify-center">
-                      {item.type === "Auto" ? (
-                        <Car className="h-16 w-16 text-muted-foreground" />
-                      ) : (
-                        <Ship className="h-16 w-16 text-muted-foreground" />
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-6 flex-grow">
-                    <CardTitle className="text-xl mb-2">{item.name}</CardTitle>
-                    <div className="text-sm text-muted-foreground space-y-1">
-                      <p>
-                        <strong>Bouwjaar:</strong> {item.year}
+            {loading ? (
+              <div className="flex justify-center items-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : listings.length > 0 ? (
+              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {listings.map((item) => (
+                  <Card
+                    key={item.id}
+                    className="overflow-hidden hover:shadow-xl transition-shadow duration-300 flex flex-col"
+                  >
+                    <CardHeader className="p-0">
+                      <div className="aspect-video bg-secondary flex items-center justify-center">
+                        {item.type === "Auto" ? (
+                          <Car className="h-16 w-16 text-muted-foreground" />
+                        ) : (
+                          <Ship className="h-16 w-16 text-muted-foreground" />
+                        )}
+                      </div>
+                    </CardHeader>
+                    <CardContent className="p-6 flex-grow">
+                      <CardTitle className="text-xl mb-2">{item.name}</CardTitle>
+                      <div className="text-sm text-muted-foreground space-y-1">
+                        {item.year && <p><strong>Bouwjaar:</strong> {item.year}</p>}
+                        {item.type === "Auto" && item.mileage != null && (
+                          <p>
+                            <strong>Kilometerstand:</strong>{" "}
+                            {item.mileage.toLocaleString('nl-NL')} km
+                          </p>
+                        )}
+                        {item.type === "Boot" && item.sailing_hours != null && (
+                          <p>
+                            <strong>Vaaruren:</strong> {item.sailing_hours}
+                          </p>
+                        )}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="p-6 bg-secondary/30 flex justify-between items-center">
+                      <p className="text-lg font-bold">
+                        {new Intl.NumberFormat("nl-NL", {
+                          style: "currency",
+                          currency: "EUR",
+                        }).format(item.price)}
                       </p>
-                      <p>
-                        <strong>
-                          {item.type === "Auto"
-                            ? "Kilometerstand"
-                            : "Vaaruren"}
-                          :
-                        </strong>{" "}
-                        {item.type === "Auto" ? item.mileage : item.hours}
-                      </p>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="p-6 bg-secondary/30 flex justify-between items-center">
-                    <p className="text-lg font-bold">{item.price}</p>
-                    <Button variant="outline">Bekijk</Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
+                      <Button asChild variant="outline">
+                        <Link href={`/aanbod/${item.id}`}>Bekijk</Link>
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <h2 className="text-2xl font-bold tracking-tight">
+                  Geen aanbod gevonden
+                </h2>
+                <p className="mt-4 text-muted-foreground">
+                  Onze showroom is momenteel leeg. Kom snel terug!
+                </p>
+              </div>
+            )}
           </div>
         </section>
 
