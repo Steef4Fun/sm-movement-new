@@ -26,27 +26,18 @@ jobs:
       # Stap 3: Voer de deployment-commando's uit op de VPS
       - name: Deploy Frontend to VPS
         run: |
-          # Gebruik sshpass om het wachtwoord veilig door te geven via een secret.
           sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-            # Stop het script direct als een commando mislukt
             set -e
 
-            # --- FRONT-END DEPLOYMENT ---
-            echo "--- Starten met Frontend deployment ---"
-            # Ga naar de frontend projectmap op de server
             cd /var/www/sm-movement/
             
-            echo "--> Laatste code ophalen van GitHub..."
             git pull
-            
-            echo "--> Dependencies installeren met npm..."
             npm install
-            
-            echo "--> Frontend builden voor productie..."
             npm run build
             
-            echo "--> Frontend applicatie herstarten met PM2..."
-            pm2 restart sm-movement-frontend
+            # --- DE FIX ---
+            # Gebruik 'reload' voor een stabielere, zero-downtime herstart
+            pm2 reload sm-movement-frontend
             
             echo "Frontend deployment is succesvol afgerond."
           EOF
