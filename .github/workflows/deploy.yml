@@ -37,7 +37,7 @@ jobs:
             
             # --- DE FIX ---
             # Gebruik 'reload' voor een stabielere, zero-downtime herstart
-            pm2 reload sm-movement-frontend
+            pm2 restart ecosystem.config.js
             
             echo "Frontend deployment is succesvol afgerond."
           EOF
