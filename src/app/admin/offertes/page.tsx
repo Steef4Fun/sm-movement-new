@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import * as api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,7 +34,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { PlusCircle, MoreHorizontal, Trash2, Pencil } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { PlusCircle, MoreHorizontal, Trash2, Pencil, Search } from "lucide-react";
 import { AddQuoteDialog } from "@/components/admin/AddQuoteDialog";
 import { EditQuoteDialog } from "@/components/admin/EditQuoteDialog";
 import { toast } from "sonner";
@@ -45,7 +46,7 @@ type Quote = {
   amount: number;
   status: string;
   created_at: string;
-  user: { first_name: string | null; last_name: string | null } | null;
+  user: { first_name: string | null; last_name: string | null; email: string; } | null;
 };
 
 export default function OfferteBeheerPage() {
@@ -55,6 +56,7 @@ export default function OfferteBeheerPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedQuote, setSelectedQuote] = useState<Quote | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchQuotes = useCallback(async () => {
     setLoading(true);
@@ -71,6 +73,17 @@ export default function OfferteBeheerPage() {
   useEffect(() => {
     fetchQuotes();
   }, [fetchQuotes]);
+
+  const filteredQuotes = useMemo(() => {
+    return quotes.filter((quote) => {
+      const query = searchQuery.toLowerCase();
+      if (!query) return true;
+      const user = quote.user;
+      if (!user) return false;
+      const fullName = `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
+      return fullName.includes(query) || user.email.toLowerCase().includes(query);
+    });
+  }, [quotes, searchQuery]);
 
   const handleEdit = (quote: Quote) => {
     setSelectedQuote(quote);
@@ -134,7 +147,7 @@ export default function OfferteBeheerPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-start">
             <div>
               <CardTitle>Offertebeheer</CardTitle>
               <CardDescription>
@@ -146,6 +159,16 @@ export default function OfferteBeheerPage() {
               Nieuwe Offerte
             </Button>
           </div>
+           <div className="relative mt-4">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Zoek op naam of e-mail..."
+                className="pl-8 w-full"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -166,8 +189,8 @@ export default function OfferteBeheerPage() {
                     Laden...
                   </TableCell>
                 </TableRow>
-              ) : quotes.length > 0 ? (
-                quotes.map((quote) => (
+              ) : filteredQuotes.length > 0 ? (
+                filteredQuotes.map((quote) => (
                   <TableRow key={quote.id}>
                     <TableCell>
                       {quote.user?.first_name || "Onbekende"}{" "}

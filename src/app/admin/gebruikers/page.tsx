@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import * as api from "@/lib/api";
 import {
   Card,
@@ -53,6 +54,7 @@ export default function GebruikersBeheerPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const router = useRouter();
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -94,6 +96,10 @@ export default function GebruikersBeheerPage() {
     }
   };
 
+  const handleRowClick = (userId: string) => {
+    router.push(`/admin/gebruikers/${userId}`);
+  };
+
   return (
     <>
       {selectedUser && (
@@ -129,7 +135,7 @@ export default function GebruikersBeheerPage() {
         <CardHeader>
           <CardTitle>Gebruikersbeheer</CardTitle>
           <CardDescription>
-            Beheer hier alle gebruikers van het platform.
+            Beheer hier alle gebruikers van het platform. Klik op een rij voor meer details.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -151,7 +157,7 @@ export default function GebruikersBeheerPage() {
                 </TableRow>
               ) : users.length > 0 ? (
                 users.map((user) => (
-                  <TableRow key={user.id}>
+                  <TableRow key={user.id} onClick={() => handleRowClick(user.id)} className="cursor-pointer">
                     <TableCell className="font-medium">
                       {user.first_name || user.last_name
                         ? `${user.first_name} ${user.last_name}`
@@ -165,7 +171,7 @@ export default function GebruikersBeheerPage() {
                         {user.role}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
