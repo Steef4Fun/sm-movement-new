@@ -152,6 +152,26 @@
   }
 }
 
+/* Custom Calendar Styles */
+.rdp-caption_label {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.rdp-nav_button {
+  height: 2rem;
+  width: 2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition-colors: 0.2s;
+}
+
+.rdp-nav_button:hover {
+  background-color: hsl(var(--accent));
+}
+
 /* Custom calendar modifier for appointments */
 .day-with-appointment {
   position: relative;
@@ -160,16 +180,17 @@
 .day-with-appointment::after {
   content: '';
   position: absolute;
-  bottom: 6px;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background-color: hsl(var(--primary));
 }
 
 /* Change dot color on selected day to be visible */
+.day-with-appointment[aria-selected="true"]::after,
 .day-with-appointment:has(>[aria-selected="true"])::after {
   background-color: hsl(var(--primary-foreground));
 }
