@@ -48,19 +48,25 @@ export default function GebruikerDetailPage() {
       const userData = await api.getUserById(id);
       setUser(userData);
 
-      try {
-        const allAppointments = await api.getAppointments();
-        setAppointments(allAppointments.filter((app: any) => app.user_id === id));
-      } catch (e) {
-        console.error("Failed to fetch appointments for user", e);
-        setAppointments([]);
-      }
+      if (userData) {
+        try {
+          const allAppointments = await api.getAppointments();
+          setAppointments(allAppointments.filter((app: any) => app.user_id === userData.id));
+        } catch (e) {
+          console.error("Failed to fetch appointments for user", e);
+          setAppointments([]);
+        }
 
-      try {
-        const allQuotes = await api.getQuotes();
-        setQuotes(allQuotes.filter((quote: any) => quote.user_id === id));
-      } catch (e) {
-        console.error("Failed to fetch quotes for user", e);
+        try {
+          const allQuotes = await api.getQuotes();
+          setQuotes(allQuotes.filter((quote: any) => quote.user_id === userData.id));
+        } catch (e) {
+          console.error("Failed to fetch quotes for user", e);
+          setQuotes([]);
+        }
+      } else {
+        // If user data couldn't be fetched, there's no related data to show.
+        setAppointments([]);
         setQuotes([]);
       }
     } catch (error) {
