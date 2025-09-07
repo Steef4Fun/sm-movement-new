@@ -78,7 +78,7 @@ export default function TuningPage() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section
-          className="relative flex items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
+          className="relative flex items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat sticky top-0"
           style={{ backgroundImage: "url('/tuning-hero.jpg')" }}
         >
           <div className="absolute inset-0 bg-black/60" />
