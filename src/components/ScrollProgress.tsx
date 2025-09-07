@@ -47,7 +47,13 @@ export const ScrollProgress = ({ sections }: ScrollProgressProps) => {
             className="group flex items-center gap-3"
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById(section.id)?.scrollIntoView({ behavior: "smooth" });
+              const element = document.getElementById(section.id);
+              if (element) {
+                window.scrollTo({
+                  top: element.offsetTop,
+                  behavior: "smooth",
+                });
+              }
             }}
           >
             <span
