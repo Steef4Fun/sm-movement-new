@@ -40,6 +40,8 @@ import { AddQuoteDialog } from "@/components/admin/AddQuoteDialog";
 import { EditQuoteDialog } from "@/components/admin/EditQuoteDialog";
 import { toast } from "sonner";
 import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
+import { StatusBadge } from "@/components/admin/StatusBadge";
+import Link from "next/link";
 
 type Quote = {
   id: string;
@@ -47,7 +49,7 @@ type Quote = {
   amount: number;
   status: string;
   created_at: string;
-  user: { first_name: string | null; last_name: string | null; email: string; } | null;
+  user: { id: string; first_name: string | null; last_name: string | null; email: string; } | null;
 };
 
 export default function OfferteBeheerPage() {
@@ -192,8 +194,14 @@ export default function OfferteBeheerPage() {
                 filteredQuotes.map((quote) => (
                   <TableRow key={quote.id}>
                     <TableCell>
-                      {quote.user?.first_name || "Onbekende"}{" "}
-                      {quote.user?.last_name || "Klant"}
+                       {quote.user ? (
+                           <Link href={`/admin/gebruikers/${quote.user.id}`} className="hover:underline">
+                            {quote.user?.first_name || "Onbekende"}{" "}
+                            {quote.user?.last_name || "Klant"}
+                           </Link>
+                        ) : (
+                          "Onbekende Klant"
+                        )}
                     </TableCell>
                     <TableCell className="font-medium">{quote.subject}</TableCell>
                     <TableCell>
@@ -202,7 +210,9 @@ export default function OfferteBeheerPage() {
                         currency: "EUR",
                       }).format(quote.amount)}
                     </TableCell>
-                    <TableCell>{quote.status}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={quote.status} />
+                    </TableCell>
                     <TableCell>
                       {new Date(quote.created_at).toLocaleDateString("nl-NL")}
                     </TableCell>

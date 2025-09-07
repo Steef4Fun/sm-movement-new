@@ -17,10 +17,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ClientOnly } from "@/components/ClientOnly";
+import { StatusBadge } from "@/components/admin/StatusBadge";
 
 type Appointment = {
   id: string;
@@ -70,12 +70,13 @@ export default function AccountAfsprakenPage() {
               <TableHead className="w-[50px]"></TableHead>
               <TableHead>Service</TableHead>
               <TableHead>Datum</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center">
+                <TableCell colSpan={4} className="text-center">
                   Laden...
                 </TableCell>
               </TableRow>
@@ -88,7 +89,7 @@ export default function AccountAfsprakenPage() {
                     className={cn(
                       "cursor-pointer",
                       appointment.status === "geannuleerd" &&
-                        "text-muted-foreground line-through"
+                        "text-muted-foreground"
                     )}
                   >
                     <TableCell>
@@ -100,12 +101,7 @@ export default function AccountAfsprakenPage() {
                       />
                     </TableCell>
                     <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        <span>{appointment.service_type}</span>
-                        {appointment.status === "geannuleerd" && (
-                          <Badge variant="destructive">Geannuleerd</Badge>
-                        )}
-                      </div>
+                      {appointment.service_type}
                     </TableCell>
                     <TableCell>
                       <ClientOnly>
@@ -121,13 +117,16 @@ export default function AccountAfsprakenPage() {
                         )}
                       </ClientOnly>
                     </TableCell>
+                    <TableCell>
+                      <StatusBadge status={appointment.status} />
+                    </TableCell>
                   </TableRow>
                 ];
 
                 if (openAppointmentId === appointment.id) {
                   rows.push(
                     <TableRow key={`${appointment.id}-details`}>
-                      <TableCell colSpan={3} className="p-0">
+                      <TableCell colSpan={4} className="p-0">
                         <div className="p-4 bg-muted/50">
                           <h4 className="font-semibold mb-2">Opmerkingen</h4>
                           <p className="text-sm text-muted-foreground whitespace-pre-wrap">
@@ -143,7 +142,7 @@ export default function AccountAfsprakenPage() {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={3} className="text-center">
+                <TableCell colSpan={4} className="text-center">
                   U heeft nog geen afspraken.
                 </TableCell>
               </TableRow>

@@ -39,6 +39,7 @@ import { AddListingDialog } from "@/components/admin/AddListingDialog";
 import { EditListingDialog } from "@/components/admin/EditListingDialog";
 import { toast } from "sonner";
 import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
+import { StatusBadge } from "@/components/admin/StatusBadge";
 
 type Listing = {
   id: string;
@@ -176,7 +177,9 @@ export default function AanbodBeheerPage() {
                         currency: "EUR",
                       }).format(listing.price)}
                     </TableCell>
-                    <TableCell>{listing.status}</TableCell>
+                    <TableCell>
+                      <StatusBadge status={listing.status} />
+                    </TableCell>
                     <TableCell>
                       {new Date(listing.created_at).toLocaleDateString("nl-NL")}
                     </TableCell>

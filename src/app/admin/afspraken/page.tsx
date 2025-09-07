@@ -42,13 +42,15 @@ import { EditAppointmentDialog } from "@/components/admin/EditAppointmentDialog"
 import { toast } from "sonner";
 import { isSameDay } from "date-fns";
 import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
+import { StatusBadge } from "@/components/admin/StatusBadge";
+import Link from "next/link";
 
 type Appointment = {
   id: string;
   service_type: string;
   requested_date: string;
   status: string;
-  user: { first_name: string | null; last_name: string | null; email: string; } | null;
+  user: { id: string; first_name: string | null; last_name: string | null; email: string; } | null;
 };
 
 export default function AfspraakBeheerPage() {
@@ -217,8 +219,14 @@ export default function AfspraakBeheerPage() {
                   filteredAppointments.map((appointment) => (
                     <TableRow key={appointment.id}>
                       <TableCell>
-                        {appointment.user?.first_name || "Onbekende"}{" "}
-                        {appointment.user?.last_name || "Klant"}
+                        {appointment.user ? (
+                           <Link href={`/admin/gebruikers/${appointment.user.id}`} className="hover:underline">
+                            {appointment.user?.first_name || "Onbekende"}{" "}
+                            {appointment.user?.last_name || "Klant"}
+                           </Link>
+                        ) : (
+                          "Onbekende Klant"
+                        )}
                       </TableCell>
                       <TableCell className="font-medium">
                         {appointment.service_type}
@@ -228,7 +236,9 @@ export default function AfspraakBeheerPage() {
                           "nl-NL", { hour: '2-digit', minute: '2-digit' }
                         )}
                       </TableCell>
-                      <TableCell>{appointment.status}</TableCell>
+                      <TableCell>
+                        <StatusBadge status={appointment.status} />
+                      </TableCell>
                       <TableCell className="text-right">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
