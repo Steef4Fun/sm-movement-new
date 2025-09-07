@@ -15,18 +15,13 @@ export const ScrollProgress = ({ sections }: ScrollProgressProps) => {
       const scrollPosition = window.scrollY;
       const windowHeight = window.innerHeight;
 
-      let currentSection = sections[0].id;
-
-      for (const section of sections) {
-        const element = document.getElementById(section.id);
-        if (element) {
-          const elementTop = element.offsetTop;
-          if (scrollPosition + windowHeight * 0.5 >= elementTop) {
-            currentSection = section.id;
-          }
-        }
+      // Calculate the index of the section that should be active based on scroll position
+      const activeIndex = Math.round(scrollPosition / windowHeight);
+      
+      // Ensure the index is within the bounds of the sections array
+      if (activeIndex >= 0 && activeIndex < sections.length) {
+        setActiveSection(sections[activeIndex].id);
       }
-      setActiveSection(currentSection);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -40,20 +35,19 @@ export const ScrollProgress = ({ sections }: ScrollProgressProps) => {
   return (
     <div className="fixed right-0 top-1/2 z-40 -translate-y-1/2 pr-4 md:pr-8 hidden lg:block">
       <div className="flex flex-col items-end gap-4">
-        {sections.map((section) => (
+        {sections.map((section, index) => (
           <a
             key={section.id}
             href={`#${section.id}`}
             className="group flex items-center gap-3"
             onClick={(e) => {
               e.preventDefault();
-              const element = document.getElementById(section.id);
-              if (element) {
-                window.scrollTo({
-                  top: element.offsetTop,
-                  behavior: "smooth",
-                });
-              }
+              // Calculate the precise scroll position based on the section's index
+              const targetScrollY = index * window.innerHeight;
+              window.scrollTo({
+                top: targetScrollY,
+                behavior: "smooth",
+              });
             }}
           >
             <span
