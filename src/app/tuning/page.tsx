@@ -77,9 +77,12 @@ export default function TuningPage() {
       <Header />
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative flex items-center justify-center min-h-[60vh] bg-black">
-          <div className="absolute inset-0 bg-secondary/10 opacity-50" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/50 to-transparent" />
+        <section
+          className="relative flex items-center justify-center min-h-[60vh] bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/tuning-hero.jpg')" }}
+        >
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent" />
           <div className="relative z-10 text-center text-white px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
