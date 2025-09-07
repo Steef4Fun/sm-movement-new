@@ -47,6 +47,7 @@ import Link from "next/link";
 
 type Appointment = {
   id: string;
+  user_id: string;
   service_type: string;
   requested_date: string;
   status: string;
@@ -66,10 +67,24 @@ export default function AfspraakBeheerPage() {
   const fetchAppointments = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await api.getAppointments();
-      setAppointments(data);
+      const [appointmentsData, usersData] = await Promise.all([
+        api.getAppointments(),
+        api.getAllUsers(),
+      ]);
+
+      const usersById = usersData.reduce((acc: any, user: any) => {
+        acc[user.id] = user;
+        return acc;
+      }, {});
+
+      const appointmentsWithUsers = appointmentsData.map((app: any) => ({
+        ...app,
+        user: usersById[app.user_id] || null,
+      }));
+
+      setAppointments(appointmentsWithUsers);
     } catch (error) {
-      // Error is handled by the API client
+      toast.error("Kon afspraken niet ophalen.");
     } finally {
       setLoading(false);
     }
@@ -220,7 +235,7 @@ export default function AfspraakBeheerPage() {
                     <TableRow key={appointment.id}>
                       <TableCell>
                         {appointment.user ? (
-                           <Link href={`/admin/gebruikers/${appointment.user.id}`} className="hover:underline">
+                           <Link href={`/admin/gebruikers/${appointment.user.id}`} className="hover:underline font-medium">
                             {appointment.user?.first_name || "Onbekende"}{" "}
                             {appointment.user?.last_name || "Klant"}
                            </Link>
@@ -228,7 +243,7 @@ export default function AfspraakBeheerPage() {
                           "Onbekende Klant"
                         )}
                       </TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell>
                         {appointment.service_type}
                       </TableCell>
                       <TableCell>

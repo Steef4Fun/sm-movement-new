@@ -45,16 +45,28 @@ export default function GebruikerDetailPage() {
     if (!id) return;
     setLoading(true);
     try {
-      const [userData, appointmentsData, quotesData] = await Promise.all([
-        api.getUserById(id),
-        api.getAppointmentsByUserId(id),
-        api.getQuotesByUserId(id),
-      ]);
+      const userData = await api.getUserById(id);
       setUser(userData);
-      setAppointments(appointmentsData);
-      setQuotes(quotesData);
+
+      // Fetch related data separately to avoid crashing the whole page
+      try {
+        const appointmentsData = await api.getAppointmentsByUserId(id);
+        setAppointments(appointmentsData);
+      } catch (e) {
+        console.error("Failed to fetch appointments for user", e);
+        setAppointments([]); // Set to empty array on failure
+      }
+
+      try {
+        const quotesData = await api.getQuotesByUserId(id);
+        setQuotes(quotesData);
+      } catch (e) {
+        console.error("Failed to fetch quotes for user", e);
+        setQuotes([]); // Set to empty array on failure
+      }
     } catch (error) {
       console.error("Failed to fetch user details", error);
+      setUser(null);
     } finally {
       setLoading(false);
     }

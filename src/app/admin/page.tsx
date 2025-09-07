@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Users, Car, Calendar, FileText, Activity } from "lucide-react";
 import Link from "next/link";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { toast } from "sonner";
 
 type StatCardProps = {
   title: string;
@@ -64,6 +65,21 @@ export default function DashboardPage() {
           api.getQuotes(),
         ]);
 
+        const usersById = users.reduce((acc: any, user: any) => {
+          acc[user.id] = user;
+          return acc;
+        }, {});
+
+        const appointmentsWithUsers = appointments.map((a: any) => ({
+          ...a,
+          user: usersById[a.user_id] || null,
+        }));
+
+        const quotesWithUsers = quotes.map((q: any) => ({
+          ...q,
+          user: usersById[q.user_id] || null,
+        }));
+
         setStats({
           totalUsers: users.length,
           activeListings: listings.filter((l: any) => l.status === 'beschikbaar').length,
@@ -72,8 +88,8 @@ export default function DashboardPage() {
         });
 
         const combinedActivity = [
-          ...appointments.map((a: any) => ({ ...a, type: 'afspraak', date: a.created_at })),
-          ...quotes.map((q: any) => ({ ...q, type: 'offerte', date: q.created_at })),
+          ...appointmentsWithUsers.map((a: any) => ({ ...a, type: 'afspraak', date: a.created_at })),
+          ...quotesWithUsers.map((q: any) => ({ ...q, type: 'offerte', date: q.created_at })),
         ];
 
         combinedActivity.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -81,6 +97,7 @@ export default function DashboardPage() {
 
       } catch (error) {
         console.error("Failed to fetch dashboard data", error);
+        toast.error("Kon dashboard gegevens niet laden.");
       } finally {
         setLoading(false);
       }

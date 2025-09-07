@@ -45,6 +45,7 @@ import Link from "next/link";
 
 type Quote = {
   id: string;
+  user_id: string;
   subject: string;
   amount: number;
   status: string;
@@ -64,10 +65,24 @@ export default function OfferteBeheerPage() {
   const fetchQuotes = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await api.getQuotes();
-      setQuotes(data);
+      const [quotesData, usersData] = await Promise.all([
+        api.getQuotes(),
+        api.getAllUsers(),
+      ]);
+
+      const usersById = usersData.reduce((acc: any, user: any) => {
+        acc[user.id] = user;
+        return acc;
+      }, {});
+
+      const quotesWithUsers = quotesData.map((quote: any) => ({
+        ...quote,
+        user: usersById[quote.user_id] || null,
+      }));
+
+      setQuotes(quotesWithUsers);
     } catch (error) {
-      // Error is handled by the API client
+      toast.error("Kon offertes niet ophalen.");
     } finally {
       setLoading(false);
     }
@@ -195,7 +210,7 @@ export default function OfferteBeheerPage() {
                   <TableRow key={quote.id}>
                     <TableCell>
                        {quote.user ? (
-                           <Link href={`/admin/gebruikers/${quote.user.id}`} className="hover:underline">
+                           <Link href={`/admin/gebruikers/${quote.user.id}`} className="hover:underline font-medium">
                             {quote.user?.first_name || "Onbekende"}{" "}
                             {quote.user?.last_name || "Klant"}
                            </Link>
@@ -203,7 +218,7 @@ export default function OfferteBeheerPage() {
                           "Onbekende Klant"
                         )}
                     </TableCell>
-                    <TableCell className="font-medium">{quote.subject}</TableCell>
+                    <TableCell>{quote.subject}</TableCell>
                     <TableCell>
                       {new Intl.NumberFormat("nl-NL", {
                         style: "currency",
