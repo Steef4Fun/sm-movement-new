@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+  html,
+  body {
+    overflow: hidden;
+    height: 100%;
+  }
+
   :root {
     /* New Color Palette: Light Mode */
     --color-primary-50: 43 63% 96%;
@@ -105,7 +111,7 @@
   position: relative;
 }
 .day-with-appointment::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 4px;
   left: 50%;
