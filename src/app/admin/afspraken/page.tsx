@@ -35,15 +35,28 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { PlusCircle, MoreHorizontal, Trash2, Pencil, Search } from "lucide-react";
+import {
+  PlusCircle,
+  MoreHorizontal,
+  Trash2,
+  Pencil,
+  Search,
+  Calendar as CalendarIcon,
+  X,
+} from "lucide-react";
 import { AddAppointmentDialog } from "@/components/admin/AddAppointmentDialog";
 import { EditAppointmentDialog } from "@/components/admin/EditAppointmentDialog";
 import { toast } from "sonner";
-import { isSameDay } from "date-fns";
+import { isSameDay, format } from "date-fns";
 import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
-import { StatusBadge } from "@/components/admin/StatusBadge";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 type Appointment = {
   id: string;
@@ -51,7 +64,12 @@ type Appointment = {
   service_type: string;
   requested_date: string;
   status: string;
-  user: { id: string; first_name: string | null; last_name: string | null; email: string; } | null;
+  user: {
+    id: string;
+    first_name: string | null;
+    last_name: string | null;
+    email: string;
+  } | null;
 };
 
 export default function AfspraakBeheerPage() {
@@ -60,8 +78,9 @@ export default function AfspraakBeheerPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedAppointment, setSelectedAppointment] =
+    useState<Appointment | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchAppointments = useCallback(async () => {
@@ -95,19 +114,34 @@ export default function AfspraakBeheerPage() {
   }, [fetchAppointments]);
 
   const filteredAppointments = useMemo(() => {
-    return appointments
-      .filter((appointment) => {
-        if (!selectedDate) return true;
-        return isSameDay(new Date(appointment.requested_date), selectedDate);
-      })
-      .filter((appointment) => {
-        const query = searchQuery.toLowerCase();
-        if (!query) return true;
+    let filtered = [...appointments];
+
+    if (selectedDate) {
+      filtered = filtered.filter((appointment) =>
+        isSameDay(new Date(appointment.requested_date), selectedDate)
+      );
+    }
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter((appointment) => {
         const user = appointment.user;
         if (!user) return false;
-        const fullName = `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
-        return fullName.includes(query) || user.email.toLowerCase().includes(query);
+        const fullName =
+          `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
+        return (
+          fullName.includes(query) || user.email.toLowerCase().includes(query)
+        );
       });
+    }
+
+    filtered.sort(
+      (a, b) =>
+        new Date(b.requested_date).getTime() -
+        new Date(a.requested_date).getTime()
+    );
+
+    return filtered;
   }, [appointments, selectedDate, searchQuery]);
 
   const handleEdit = (appointment: Appointment) => {
@@ -133,8 +167,6 @@ export default function AfspraakBeheerPage() {
       setSelectedAppointment(null);
     }
   };
-
-  const appointmentDates = useMemo(() => appointments.map(a => new Date(a.requested_date)), [appointments]);
 
   return (
     <>
@@ -173,124 +205,144 @@ export default function AfspraakBeheerPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-1">
-          <CardContent className="p-2">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              className="rounded-md"
-              modifiers={{ appointments: appointmentDates }}
-              modifiersClassNames={{
-                appointments: 'day-with-appointment',
-              }}
-            />
-          </CardContent>
-        </Card>
-
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle>Afsprakenbeheer</CardTitle>
-                <CardDescription>
-                  {selectedDate ? `Afspraken voor ${selectedDate.toLocaleDateString('nl-NL')}` : 'Alle afspraken'}
-                </CardDescription>
-              </div>
-              <Button onClick={() => setIsAddDialogOpen(true)}>
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Nieuwe Afspraak
-              </Button>
+      <Card>
+        <CardHeader>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle>Afsprakenbeheer</CardTitle>
+              <CardDescription>
+                Beheer, filter en plan hier alle afspraken.
+              </CardDescription>
             </div>
-            <div className="relative mt-4">
+            <Button onClick={() => setIsAddDialogOpen(true)}>
+              <PlusCircle className="h-4 w-4 mr-2" />
+              Nieuwe Afspraak
+            </Button>
+          </div>
+          <div className="flex items-center gap-2 pt-4">
+            <div className="relative flex-grow">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 type="search"
-                placeholder="Zoek op naam of e-mail..."
+                placeholder="Zoek op klant..."
                 className="pl-8 w-full"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Klant</TableHead>
-                  <TableHead>Service</TableHead>
-                  <TableHead>Tijd</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Acties</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  Array.from({ length: 5 }).map((_, i) => (
-                    <TableRowSkeleton key={i} columns={5} />
-                  ))
-                ) : filteredAppointments.length > 0 ? (
-                  filteredAppointments.map((appointment) => (
-                    <TableRow key={appointment.id}>
-                      <TableCell>
-                        {appointment.user ? (
-                           <Link href={`/admin/gebruikers/${appointment.user.id}`} className="hover:underline font-medium">
-                            {appointment.user?.first_name || "Onbekende"}{" "}
-                            {appointment.user?.last_name || "Klant"}
-                           </Link>
-                        ) : (
-                          "Onbekende Klant"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {appointment.service_type}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(appointment.requested_date).toLocaleTimeString(
-                          "nl-NL", { hour: '2-digit', minute: '2-digit' }
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <StatusBadge status={appointment.status} />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEdit(appointment)}>
-                              <Pencil className="mr-2 h-4 w-4" />
-                              Bewerken
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleDelete(appointment)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Verwijderen
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center">
-                      Geen afspraken gevonden.
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[240px] justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? (
+                    format(selectedDate, "PPP")
+                  ) : (
+                    <span>Filter op datum</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={setSelectedDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            {selectedDate && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSelectedDate(undefined)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Klant</TableHead>
+                <TableHead>Service</TableHead>
+                <TableHead>Datum & Tijd</TableHead>
+                <TableHead className="text-right">Acties</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <TableRowSkeleton key={i} columns={4} />
+                ))
+              ) : filteredAppointments.length > 0 ? (
+                filteredAppointments.map((appointment) => (
+                  <TableRow key={appointment.id}>
+                    <TableCell>
+                      {appointment.user ? (
+                        <Link
+                          href={`/admin/gebruikers/${appointment.user.id}`}
+                          className="hover:underline font-medium"
+                        >
+                          {appointment.user?.first_name || "Onbekende"}{" "}
+                          {appointment.user?.last_name || "Klant"}
+                        </Link>
+                      ) : (
+                        "Onbekende Klant"
+                      )}
+                    </TableCell>
+                    <TableCell>{appointment.service_type}</TableCell>
+                    <TableCell>
+                      {new Date(appointment.requested_date).toLocaleString(
+                        "nl-NL",
+                        { dateStyle: "medium", timeStyle: "short" }
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleEdit(appointment)}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            Bewerken
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(appointment)}
+                            className="text-red-600"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Verwijderen
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </div>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-10">
+                    Geen afspraken gevonden voor de geselecteerde filters.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </>
   );
 }

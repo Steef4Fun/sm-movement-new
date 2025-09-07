@@ -48,7 +48,6 @@ const appointmentSchema = z.object({
   requested_date: z.date(),
   time: z.string(),
   notes: z.string().optional(),
-  status: z.enum(["in afwachting", "bevestigd", "geannuleerd"]),
 });
 
 type AppointmentFormValues = z.infer<typeof appointmentSchema>;
@@ -198,31 +197,6 @@ export function EditAppointmentDialog({
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="in afwachting">In afwachting</SelectItem>
-                      <SelectItem value="bevestigd">Bevestigd</SelectItem>
-                      <SelectItem value="geannuleerd">Geannuleerd</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

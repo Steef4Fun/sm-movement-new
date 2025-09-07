@@ -148,7 +148,6 @@ export default function GebruikerDetailPage() {
                   <TableRow>
                     <TableHead>Service</TableHead>
                     <TableHead>Datum</TableHead>
-                    <TableHead>Status</TableHead>
                     <TableHead className="text-right">Acties</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -158,7 +157,6 @@ export default function GebruikerDetailPage() {
                       <TableRow key={app.id}>
                         <TableCell>{app.service_type}</TableCell>
                         <TableCell>{new Date(app.requested_date).toLocaleDateString('nl-NL')}</TableCell>
-                        <TableCell><StatusBadge status={app.status} /></TableCell>
                         <TableCell className="text-right">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -177,7 +175,7 @@ export default function GebruikerDetailPage() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center">Geen afspraken.</TableCell>
+                      <TableCell colSpan={3} className="text-center">Geen afspraken.</TableCell>
                     </TableRow>
                   )}
                 </TableBody>
