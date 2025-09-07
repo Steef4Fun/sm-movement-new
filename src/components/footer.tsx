@@ -58,7 +58,7 @@ export const Footer = () => {
                 </li>
                 <li className="flex items-start gap-2">
                   <Phone className="h-4 w-4 mt-0.5 text-muted-foreground" />
-                  <span className="text-muted-foreground">+31 6 12345678</span>
+                  <span className="text-muted-foreground">+31 085 369 5189</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Mail className="h-4 w-4 mt-0.5 text-muted-foreground" />
