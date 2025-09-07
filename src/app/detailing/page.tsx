@@ -77,22 +77,25 @@ export default function DetailingPage() {
       <Header />
       <main className="flex-grow">
         {/* Hero Section */}
-        <motion.section
-          className="pt-32 pb-20 text-center bg-secondary/30"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter">
-              Professionele Detailing
-            </h1>
-            <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-              Oog voor detail is geen optie, het is onze standaard. Wij
-              transformeren uw auto tot in absolute perfectie.
-            </p>
+        <section className="relative flex items-center justify-center min-h-[60vh] bg-black">
+          <div className="absolute inset-0 bg-secondary/10 opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/50 to-transparent" />
+          <div className="relative z-10 text-center text-white px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter">
+                Professionele Detailing
+              </h1>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
+                Oog voor detail is geen optie, het is onze standaard. Wij
+                transformeren uw auto tot in absolute perfectie.
+              </p>
+            </motion.div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Detailing Services Section */}
         <section className="py-20 md:py-28">
@@ -183,7 +186,13 @@ export default function DetailingPage() {
 
         {/* Call to Action Section */}
         <section className="py-20 md:py-28 text-center">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            className="container mx-auto px-4 sm:px-6 lg:px-8"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.6 }}
+          >
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Klaar voor een Showroom-Finish?
             </h2>
@@ -196,7 +205,7 @@ export default function DetailingPage() {
                 <Link href="/contact">Maak een afspraak</Link>
               </Button>
             </div>
-          </div>
+          </motion.div>
         </section>
       </main>
       <Footer />
