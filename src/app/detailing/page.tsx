@@ -148,7 +148,7 @@ export default function DetailingPage() {
         </section>
 
         {/* Our Process Section */}
-        <section className="sticky top-0 min-h-screen flex items-center bg-secondary/30">
+        <section className="sticky top-0 min-h-screen flex items-center bg-secondary">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
             <motion.div
               className="text-center mb-16"
