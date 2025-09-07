@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Cpu, Gauge, ArrowDownToLine, ToyBrick } from "lucide-react";
 import Link from "next/link";
-import { motion, Variants } from "framer-motion";
+import { motion, Variants, HTMLMotionProps } from "framer-motion";
 import { ScrollProgress } from "@/components/ScrollProgress";
 
 export default function TuningPage() {
@@ -80,7 +80,7 @@ export default function TuningPage() {
     }),
   };
 
-  const sectionVariants = {
+  const sectionVariants: HTMLMotionProps<"section"> = {
     initial: { opacity: 0 },
     whileInView: { opacity: 1, transition: { duration: 0.7, ease: "easeOut" } },
     viewport: { once: true, amount: 0.075 }

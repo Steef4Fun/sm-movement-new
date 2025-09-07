@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { Services } from "@/components/services";
@@ -30,7 +30,7 @@ export default function Home() {
     };
   }, []);
 
-  const sectionVariants = {
+  const sectionVariants: Variants = {
     initial: { opacity: 0 },
     animate: { opacity: 1, transition: { duration: 0.8, ease: "easeInOut" } },
     exit: { opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } },
