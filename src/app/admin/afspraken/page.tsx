@@ -255,6 +255,7 @@ export default function AfspraakBeheerPage() {
                   onSelect={setSelectedDate}
                   initialFocus
                   locale={nl}
+                  weekStartsOn={1}
                 />
               </PopoverContent>
             </Popover>

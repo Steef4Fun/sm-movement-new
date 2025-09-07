@@ -191,6 +191,7 @@ export function AddAppointmentDialog({
                           disabled={(date) => date < new Date()}
                           initialFocus
                           locale={nl}
+                          weekStartsOn={1}
                         />
                       </PopoverContent>
                     </Popover>
