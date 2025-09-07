@@ -78,7 +78,7 @@ export default function DetailingPage() {
       <main className="flex-grow">
         {/* Hero Section */}
         <section
-          className="relative flex items-center justify-center min-h-[60vh] bg-cover bg-center bg-no-repeat"
+          className="relative flex items-center justify-center min-h-screen bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/detailing-hero.jpg')" }}
         >
           <div className="absolute inset-0 bg-black/60" />
@@ -101,8 +101,8 @@ export default function DetailingPage() {
         </section>
 
         {/* Detailing Services Section */}
-        <section className="py-20 md:py-28">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="sticky top-0 min-h-screen flex items-center bg-background">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
             <motion.div
               className="text-center mb-16"
               initial={{ opacity: 0, y: 50 }}
@@ -148,8 +148,8 @@ export default function DetailingPage() {
         </section>
 
         {/* Our Process Section */}
-        <section className="py-20 md:py-28 bg-secondary/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="sticky top-0 min-h-screen flex items-center bg-secondary/30">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
             <motion.div
               className="text-center mb-16"
               initial={{ opacity: 0, y: 50 }}
@@ -188,27 +188,28 @@ export default function DetailingPage() {
         </section>
 
         {/* Call to Action Section */}
-        <section className="py-20 md:py-28 text-center">
-          <motion.div
-            className="container mx-auto px-4 sm:px-6 lg:px-8"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.5 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Klaar voor een Showroom-Finish?
-            </h2>
-            <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-              Laat uw auto door ons behandelen en ervaar een nieuw niveau van
-              schoon en glans. Neem contact op voor een afspraak.
-            </p>
-            <div className="mt-8">
-              <Button asChild size="lg">
-                <Link href="/contact">Maak een afspraak</Link>
-              </Button>
-            </div>
-          </motion.div>
+        <section className="sticky top-0 min-h-screen flex items-center justify-center text-center bg-background">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.6 }}
+            >
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+                Klaar voor een Showroom-Finish?
+              </h2>
+              <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
+                Laat uw auto door ons behandelen en ervaar een nieuw niveau van
+                schoon en glans. Neem contact op voor een afspraak.
+              </p>
+              <div className="mt-8">
+                <Button asChild size="lg">
+                  <Link href="/contact">Maak een afspraak</Link>
+                </Button>
+              </div>
+            </motion.div>
+          </div>
         </section>
       </main>
       <Footer />
