@@ -169,7 +169,6 @@ export function EditAppointmentDialog({
                           onSelect={field.onChange}
                           initialFocus
                           locale={nl}
-                          weekStartsOn={1}
                         />
                       </PopoverContent>
                     </Popover>
