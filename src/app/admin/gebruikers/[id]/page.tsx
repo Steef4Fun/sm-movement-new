@@ -48,21 +48,20 @@ export default function GebruikerDetailPage() {
       const userData = await api.getUserById(id);
       setUser(userData);
 
-      // Fetch related data separately to avoid crashing the whole page
       try {
-        const appointmentsData = await api.getAppointmentsByUserId(id);
-        setAppointments(appointmentsData);
+        const allAppointments = await api.getAppointments();
+        setAppointments(allAppointments.filter((app: any) => app.user_id === id));
       } catch (e) {
         console.error("Failed to fetch appointments for user", e);
-        setAppointments([]); // Set to empty array on failure
+        setAppointments([]);
       }
 
       try {
-        const quotesData = await api.getQuotesByUserId(id);
-        setQuotes(quotesData);
+        const allQuotes = await api.getQuotes();
+        setQuotes(allQuotes.filter((quote: any) => quote.user_id === id));
       } catch (e) {
         console.error("Failed to fetch quotes for user", e);
-        setQuotes([]); // Set to empty array on failure
+        setQuotes([]);
       }
     } catch (error) {
       console.error("Failed to fetch user details", error);
