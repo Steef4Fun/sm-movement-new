@@ -3,7 +3,7 @@
 import { motion, Variants } from "framer-motion";
 import { Car, Ship, Sparkles, Wrench } from "lucide-react";
 
-export const Services = () => {
+export const Services = ({ id }: { id: string }) => {
   const services = [
     {
       icon: <Car className="h-10 w-10 text-primary mb-4" />,
@@ -46,8 +46,8 @@ export const Services = () => {
 
   return (
     <section
-      id="services"
-      className="sticky top-0 min-h-screen flex items-center bg-background"
+      id={id}
+      className="sticky top-0 h-screen flex items-center bg-background"
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
         <motion.div

@@ -7,9 +7,14 @@ import { Hero } from "@/components/hero";
 import { Services } from "@/components/services";
 import { Footer } from "@/components/footer";
 import { Preloader } from "@/components/preloader";
+import { ScrollProgress } from "@/components/ScrollProgress";
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
+  const sections = [
+    { id: "intro", label: "Introductie" },
+    { id: "services", label: "Expertise" },
+  ];
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -29,11 +34,14 @@ export default function Home() {
     <>
       <AnimatePresence>{isLoading && <Preloader />}</AnimatePresence>
 
-      <div className="flex flex-col min-h-screen bg-background font-[family-name:var(--font-geist-sans)]">
+      <div className="bg-background font-[family-name:var(--font-geist-sans)]">
         <Header />
+        {!isLoading && <ScrollProgress sections={sections} />}
         <main>
-          <Hero />
-          <Services />
+          <div className="relative h-[200vh]">
+            <Hero id="intro" />
+            <Services id="services" />
+          </div>
         </main>
         <Footer />
       </div>

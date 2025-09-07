@@ -2,9 +2,9 @@
 
 import { motion } from "framer-motion";
 
-export const Hero = () => {
+export const Hero = ({ id }: { id: string }) => {
   return (
-    <section className="relative flex items-center justify-center h-screen sticky top-0">
+    <section id={id} className="relative flex items-center justify-center h-screen sticky top-0">
       <video
         autoPlay
         loop
