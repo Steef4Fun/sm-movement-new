@@ -83,7 +83,7 @@ export default function DetailingPage() {
   const sectionVariants = {
     initial: { opacity: 0 },
     whileInView: { opacity: 1, transition: { duration: 0.7, ease: "easeOut" } },
-    viewport: { once: true, amount: 0.2 }
+    viewport: { once: true, amount: 0.075 }
   };
 
   return (
