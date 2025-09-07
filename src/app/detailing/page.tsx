@@ -80,6 +80,12 @@ export default function DetailingPage() {
     }),
   };
 
+  const sectionVariants = {
+    initial: { opacity: 0 },
+    whileInView: { opacity: 1, transition: { duration: 1, ease: "easeInOut" } },
+    viewport: { once: true, amount: 0.6 }
+  };
+
   return (
     <div className="bg-background">
       <Header />
@@ -87,10 +93,13 @@ export default function DetailingPage() {
       <main>
         <div className="relative h-[400vh]">
           {/* Hero Section */}
-          <section
+          <motion.section
             id="intro"
             className="relative flex items-center justify-center h-screen bg-cover bg-center bg-no-repeat sticky top-0"
             style={{ backgroundImage: "url('/detailing-hero.jpg')" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1 }}
           >
             <div className="absolute inset-0 bg-black/60" />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent" />
@@ -109,17 +118,13 @@ export default function DetailingPage() {
                 </p>
               </motion.div>
             </div>
-          </section>
+          </motion.section>
 
           {/* Detailing Services Section */}
-          <section id="diensten" className="sticky top-0 h-screen flex items-center bg-background">
+          <motion.section id="diensten" className="sticky top-0 h-screen flex items-center bg-background" {...sectionVariants}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-              <motion.div
+              <div
                 className="text-center mb-16"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.6 }}
               >
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
                   Onze Detailing Diensten
@@ -128,7 +133,7 @@ export default function DetailingPage() {
                   Elke auto verdient de beste zorg. Ontdek onze pakketten,
                   ontworpen voor elk niveau van perfectie.
                 </p>
-              </motion.div>
+              </div>
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
                 {detailingServices.map((service, index) => (
                   <motion.div
@@ -156,17 +161,13 @@ export default function DetailingPage() {
                 ))}
               </div>
             </div>
-          </section>
+          </motion.section>
 
           {/* Our Process Section */}
-          <section id="proces" className="sticky top-0 h-screen flex items-center bg-secondary">
+          <motion.section id="proces" className="sticky top-0 h-screen flex items-center bg-secondary" {...sectionVariants}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-              <motion.div
+              <div
                 className="text-center mb-16"
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.6 }}
               >
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
                   Ons Proces
@@ -175,7 +176,7 @@ export default function DetailingPage() {
                   Een gestructureerde aanpak voor een vlekkeloos resultaat, elke
                   keer weer.
                 </p>
-              </motion.div>
+              </div>
               <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 lg:grid-cols-4">
                 {processSteps.map((step, index) => (
                   <motion.div
@@ -196,17 +197,12 @@ export default function DetailingPage() {
                 ))}
               </div>
             </div>
-          </section>
+          </motion.section>
 
           {/* Call to Action Section */}
-          <section id="contact" className="sticky top-0 h-screen flex items-center justify-center text-center bg-background">
+          <motion.section id="contact" className="sticky top-0 h-screen flex items-center justify-center text-center bg-background" {...sectionVariants}>
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
-              <motion.div
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.6 }}
-              >
+              <div>
                 <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
                   Klaar voor een Showroom-Finish?
                 </h2>
@@ -219,9 +215,9 @@ export default function DetailingPage() {
                     <Link href="/contact">Maak een afspraak</Link>
                   </Button>
                 </div>
-              </motion.div>
+              </div>
             </div>
-          </section>
+          </motion.section>
         </div>
       </main>
       <Footer />

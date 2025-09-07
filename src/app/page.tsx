@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { Services } from "@/components/services";
@@ -20,7 +20,7 @@ export default function Home() {
     const timer = setTimeout(() => {
       setIsLoading(false);
       document.body.style.overflow = "auto";
-    }, 1500); // Preloader duration shortened
+    }, 1500);
 
     document.body.style.overflow = "hidden";
 
@@ -30,17 +30,27 @@ export default function Home() {
     };
   }, []);
 
+  const sectionVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: { duration: 0.8, ease: "easeInOut" } },
+    exit: { opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } },
+  };
+
   return (
     <>
       <AnimatePresence>{isLoading && <Preloader />}</AnimatePresence>
 
-      <div className="bg-background font-[family-name:var(--font-geist-sans)]">
+      <div className="bg-background font-sans">
         <Header />
         {!isLoading && <ScrollProgress sections={sections} />}
         <main>
           <div className="relative h-[200vh]">
-            <Hero id="intro" />
-            <Services id="services" />
+            <motion.div variants={sectionVariants} initial="initial" animate="animate" exit="exit">
+              <Hero id="intro" />
+            </motion.div>
+            <motion.div variants={sectionVariants} initial="initial" animate="animate" exit="exit">
+              <Services id="services" />
+            </motion.div>
           </div>
         </main>
         <Footer />

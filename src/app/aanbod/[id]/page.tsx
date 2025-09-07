@@ -95,7 +95,7 @@ export default function ListingDetailPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Image Placeholder */}
-            <div className="aspect-video bg-secondary rounded-lg flex items-center justify-center">
+            <div className="aspect-video bg-gradient-to-br from-secondary to-background rounded-lg flex items-center justify-center">
               {listing.type === "Auto" ? (
                 <Car className="h-24 w-24 text-muted-foreground" />
               ) : (

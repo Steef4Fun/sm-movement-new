@@ -185,7 +185,7 @@ export default function AanbodPage() {
                     className="overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col hover:-translate-y-1"
                   >
                     <CardHeader className="p-0">
-                      <div className="aspect-video bg-secondary flex items-center justify-center">
+                      <div className="aspect-video bg-gradient-to-br from-secondary to-background flex items-center justify-center">
                         {item.type === "Auto" ? (
                           <Car className="h-16 w-16 text-muted-foreground" />
                         ) : (
