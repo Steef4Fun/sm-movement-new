@@ -100,7 +100,7 @@ export default function AanbodPage() {
       <Header />
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="sticky top-0 min-h-screen flex items-center justify-center text-center bg-secondary/30">
+        <section className="pt-32 pb-16 text-center bg-secondary/30">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter">
               Exclusief Aanbod
@@ -113,8 +113,8 @@ export default function AanbodPage() {
         </section>
 
         {/* Filters & Listings Section */}
-        <section className="sticky top-0 min-h-screen flex items-center bg-background">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
+        <section className="py-16 md:py-24">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {/* Filter Bar */}
             <div className="mb-12 p-6 border rounded-lg bg-card">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
@@ -240,7 +240,7 @@ export default function AanbodPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="sticky top-0 min-h-screen flex items-center justify-center text-center bg-background">
+        <section className="py-16 md:py-24 text-center bg-background border-t">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
               Zoekt u iets specifieks?
