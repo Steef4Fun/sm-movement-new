@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export const Hero = () => {
   return (
-    <section className="relative flex items-center justify-center w-full h-full overflow-hidden">
+    <section className="relative flex items-center justify-center h-screen overflow-hidden">
       <video
         autoPlay
         loop
