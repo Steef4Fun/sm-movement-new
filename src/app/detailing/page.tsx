@@ -60,13 +60,13 @@ export default function DetailingPage() {
   ];
 
   const cardVariants: Variants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
       opacity: 1,
       y: 0,
       transition: {
-        delay: i * 0.15,
-        duration: 0.5,
+        delay: i * 0.2,
+        duration: 0.8,
         ease: "easeOut",
       },
     }),

@@ -9,6 +9,11 @@ export default {
   ],
   theme: {
   	extend: {
+      fontFamily: {
+        sans: ["var(--font-geist-sans)"],
+        mono: ["var(--font-geist-mono)"],
+        serif: ["var(--font-serif)"],
+      },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1.4' }], // 12px
         'sm': ['0.9375rem', { lineHeight: '1.5' }], // 15px
