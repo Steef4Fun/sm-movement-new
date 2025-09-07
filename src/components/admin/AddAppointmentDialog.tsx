@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as api from "@/lib/api";
 import { toast } from "sonner";
 import { format, setHours, setMinutes, setSeconds } from "date-fns";
+import { nl } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
@@ -174,7 +175,7 @@ export function AddAppointmentDialog({
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(field.value, "PPP", { locale: nl })
                             ) : (
                               <span>Kies een datum</span>
                             )}
@@ -189,6 +190,7 @@ export function AddAppointmentDialog({
                           onSelect={field.onChange}
                           disabled={(date) => date < new Date()}
                           initialFocus
+                          locale={nl}
                         />
                       </PopoverContent>
                     </Popover>

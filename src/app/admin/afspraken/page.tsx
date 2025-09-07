@@ -54,6 +54,7 @@ import { AddAppointmentDialog } from "@/components/admin/AddAppointmentDialog";
 import { EditAppointmentDialog } from "@/components/admin/EditAppointmentDialog";
 import { toast } from "sonner";
 import { isSameDay, format } from "date-fns";
+import { nl } from "date-fns/locale";
 import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -241,7 +242,7 @@ export default function AfspraakBeheerPage() {
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {selectedDate ? (
-                    format(selectedDate, "PPP")
+                    format(selectedDate, "PPP", { locale: nl })
                   ) : (
                     <span>Filter op datum</span>
                   )}
@@ -253,6 +254,7 @@ export default function AfspraakBeheerPage() {
                   selected={selectedDate}
                   onSelect={setSelectedDate}
                   initialFocus
+                  locale={nl}
                 />
               </PopoverContent>
             </Popover>
