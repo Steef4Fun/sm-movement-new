@@ -23,7 +23,6 @@ import {
 import { Car, Ship, Search, XCircle } from "lucide-react";
 import Link from "next/link";
 import { ListingCardSkeleton } from "@/components/skeletons/ListingCardSkeleton";
-import { motion } from "framer-motion";
 
 type Listing = {
   id: string;
@@ -79,7 +78,7 @@ export default function AanbodPage() {
         result.sort((a, b) => a.price - b.price);
         break;
       case "price-desc":
-        result.sort((a, b) => b.price - b.price);
+        result.sort((a, b) => b.price - a.price);
         break;
       case "newest":
       default:
@@ -101,23 +100,15 @@ export default function AanbodPage() {
       <Header />
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="relative flex items-center justify-center min-h-[60vh] bg-black">
-          <div className="absolute inset-0 bg-secondary/10 opacity-50" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-black/50 to-transparent" />
-          <div className="relative z-10 text-center text-white px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            >
-              <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter">
-                Exclusief Aanbod
-              </h1>
-              <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
-                Ontdek onze zorgvuldig geselecteerde collectie van premium auto's
-                en luxe boten.
-              </p>
-            </motion.div>
+        <section className="pt-32 pb-20 text-center bg-secondary/30">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter">
+              Exclusief Aanbod
+            </h1>
+            <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+              Ontdek onze zorgvuldig geselecteerde collectie van premium auto's
+              en luxe boten.
+            </p>
           </div>
         </section>
 
