@@ -1,4 +1,3 @@
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import Link from "next/link";
 import { Instagram, Facebook, Youtube, MapPin, Phone, Mail } from "lucide-react";
 
@@ -72,7 +71,14 @@ export const Footer = () => {
         <div className="mt-16 pt-8 border-t border-border/50 flex flex-col md:flex-row justify-between items-center text-xs text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} SM Movement. Alle rechten voorbehouden.</p>
           <div className="flex items-center gap-4 mt-4 md:mt-0">
-            <MadeWithDyad />
+            <a
+              href="https://discord.com/users/579903488495058944"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-primary transition-colors"
+            >
+              Made by Steef
+            </a>
           </div>
         </div>
       </div>
