@@ -26,7 +26,7 @@ function Calendar({
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium hidden",
-        caption_dropdowns: "flex justify-center gap-2",
+        caption_dropdowns: "flex justify-center gap-2 mx-8", // Added mx-8 for spacing
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -73,7 +73,7 @@ function Calendar({
                 handleChange(value)
               }}
             >
-              <SelectTrigger className="pr-1.5 focus:ring-0 h-7 w-[120px]">
+              <SelectTrigger className="focus:ring-0 h-7 w-[80px] justify-center"> {/* Changed width, removed [&>svg]:hidden */}
                 <SelectValue>{selected?.props?.children}</SelectValue>
               </SelectTrigger>
               <SelectContent position="popper">
