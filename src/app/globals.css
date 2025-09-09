@@ -119,3 +119,79 @@
 .day-with-appointment:has(>[aria-selected="true"])::after {
   background-color: hsl(var(--primary-foreground));
 }
+
+/* React Datepicker overrides */
+@import 'react-datepicker/dist/react-datepicker.css';
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker {
+  @apply font-sans bg-card border border-border rounded-md shadow-lg;
+}
+
+.react-datepicker__header {
+  @apply bg-muted/50 border-b border-border p-2;
+}
+
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  @apply text-foreground;
+}
+
+.react-datepicker__day {
+  @apply text-foreground hover:bg-accent rounded-md;
+}
+
+.react-datepicker__day--selected {
+  @apply bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground;
+}
+
+.react-datepicker__day--keyboard-selected {
+  @apply bg-accent text-accent-foreground;
+}
+
+.react-datepicker__day--outside-month {
+  @apply text-muted-foreground opacity-50;
+}
+
+.react-datepicker__navigation {
+  @apply top-3;
+}
+
+.react-datepicker__navigation--previous {
+  @apply left-2;
+}
+
+.react-datepicker__navigation--next {
+  @apply right-2;
+}
+
+.react-datepicker__navigation-icon::before {
+  @apply border-border;
+}
+
+.react-datepicker__month-dropdown-container,
+.react-datepicker__year-dropdown-container {
+  @apply inline-block mx-1;
+}
+
+.react-datepicker__month-dropdown,
+.react-datepicker__year-dropdown {
+  @apply bg-card border border-border rounded-md text-foreground;
+}
+
+.react-datepicker__month-read-view--selected-month,
+.react-datepicker__year-read-view--selected-year {
+  @apply text-foreground;
+}
+
+.react-datepicker__month-option,
+.react-datepicker__year-option {
+  @apply hover:bg-accent;
+}
+
+.react-datepicker__day--disabled {
+  @apply text-muted-foreground opacity-50 cursor-not-allowed;
+}

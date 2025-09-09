@@ -7,12 +7,10 @@ import * as api from "@/lib/api";
 import { toast } from "sonner";
 import { format, setHours, setMinutes, setSeconds } from "date-fns";
 import { nl } from "date-fns/locale";
-import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -31,11 +29,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   Select,
   SelectContent,
   SelectItem,
@@ -43,6 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { DatePickerInput } from "@/components/DatePickerInput"; // Import the new component
 
 const appointmentSchema = z.object({
   customer_email: z.string().email("Voer een geldig e-mailadres in."),
@@ -164,37 +158,13 @@ export function AddAppointmentDialog({
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Datum</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP", { locale: nl })
-                            ) : (
-                              <span>Kies een datum</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) => date < new Date()}
-                          initialFocus
-                          locale={nl}
-                          captionLayout="dropdown" // Added this line
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <FormControl>
+                      <DatePickerInput
+                        selected={field.value}
+                        onChange={field.onChange}
+                        minDate={new Date()}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

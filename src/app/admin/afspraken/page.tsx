@@ -40,14 +40,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
 import {
   PlusCircle,
   MoreHorizontal,
   Trash2,
   Pencil,
   Search,
-  Calendar as CalendarIcon,
   X,
 } from "lucide-react";
 import { AddAppointmentDialog } from "@/components/admin/AddAppointmentDialog";
@@ -58,6 +56,7 @@ import { nl } from "date-fns/locale";
 import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { DatePickerInput } from "@/components/DatePickerInput"; // Import the new component
 
 type Appointment = {
   id: string;
@@ -81,7 +80,7 @@ export default function AfspraakBeheerPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // Changed to null
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchAppointments = useCallback(async () => {
@@ -175,7 +174,7 @@ export default function AfspraakBeheerPage() {
         isOpen={isAddDialogOpen}
         setIsOpen={setIsAddDialogOpen}
         onAppointmentAdded={fetchAppointments}
-        initialDate={selectedDate}
+        initialDate={selectedDate || undefined} // Pass as undefined if null
       />
       {selectedAppointment && (
         <EditAppointmentDialog
@@ -231,39 +230,17 @@ export default function AfspraakBeheerPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[240px] justify-start text-left font-normal",
-                    !selectedDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {selectedDate ? (
-                    format(selectedDate, "PPP", { locale: nl })
-                  ) : (
-                    <span>Filter op datum</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={setSelectedDate}
-                  initialFocus
-                  locale={nl}
-                  captionLayout="dropdown" // Added this line
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePickerInput
+              selected={selectedDate}
+              onChange={(date) => setSelectedDate(date)}
+              placeholderText="Filter op datum"
+              className="w-[240px]"
+            />
             {selectedDate && (
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setSelectedDate(undefined)}
+                onClick={() => setSelectedDate(null)}
               >
                 <X className="h-4 w-4" />
               </Button>
