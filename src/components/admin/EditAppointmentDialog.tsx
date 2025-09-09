@@ -169,6 +169,7 @@ export function EditAppointmentDialog({
                           onSelect={field.onChange}
                           initialFocus
                           locale={nl}
+                          captionLayout="dropdown" // Added this line
                         />
                       </PopoverContent>
                     </Popover>
