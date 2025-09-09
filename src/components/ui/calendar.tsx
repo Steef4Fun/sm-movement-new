@@ -12,12 +12,10 @@ export type CalendarProps = React.ComponentProps<typeof DayPicker>
 function Calendar({
   className,
   classNames,
-  // showHead = true, // Removed this line
   ...props
 }: CalendarProps) {
   return (
     <DayPicker
-      // showHead={showHead} // Removed this line
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
@@ -54,8 +52,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        IconPrevious: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
+        IconNext: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />
