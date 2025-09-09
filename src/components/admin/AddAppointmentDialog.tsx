@@ -5,9 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as api from "@/lib/api";
 import { toast } from "sonner";
-import { format, setHours, setMinutes, setSeconds } from "date-fns";
-import { nl } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { setHours, setMinutes, setSeconds } from "date-fns";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -36,7 +34,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { DatePickerInput } from "@/components/DatePickerInput"; // Import the new component
+import { DatePicker } from "@/components/ui/datepicker";
 
 const appointmentSchema = z.object({
   customer_email: z.string().email("Voer een geldig e-mailadres in."),
@@ -156,15 +154,13 @@ export function AddAppointmentDialog({
                 control={form.control}
                 name="requested_date"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem className="flex flex-col justify-end">
                     <FormLabel>Datum</FormLabel>
-                    <FormControl>
-                      <DatePickerInput
-                        selected={field.value}
-                        onChange={field.onChange}
-                        minDate={new Date()}
-                      />
-                    </FormControl>
+                    <DatePicker
+                      date={field.value}
+                      setDate={field.onChange}
+                      fromDate={new Date()}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}

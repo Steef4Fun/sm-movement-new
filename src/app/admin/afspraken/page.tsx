@@ -36,11 +36,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
   PlusCircle,
   MoreHorizontal,
   Trash2,
@@ -51,12 +46,10 @@ import {
 import { AddAppointmentDialog } from "@/components/admin/AddAppointmentDialog";
 import { EditAppointmentDialog } from "@/components/admin/EditAppointmentDialog";
 import { toast } from "sonner";
-import { isSameDay, format } from "date-fns";
-import { nl } from "date-fns/locale";
+import { isSameDay } from "date-fns";
 import { TableRowSkeleton } from "@/components/skeletons/TableRowSkeleton";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { DatePickerInput } from "@/components/DatePickerInput"; // Import the new component
+import { DatePicker } from "@/components/ui/datepicker";
 
 type Appointment = {
   id: string;
@@ -80,7 +73,7 @@ export default function AfspraakBeheerPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] =
     useState<Appointment | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null); // Changed to null
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
   const fetchAppointments = useCallback(async () => {
@@ -174,7 +167,7 @@ export default function AfspraakBeheerPage() {
         isOpen={isAddDialogOpen}
         setIsOpen={setIsAddDialogOpen}
         onAppointmentAdded={fetchAppointments}
-        initialDate={selectedDate || undefined} // Pass as undefined if null
+        initialDate={selectedDate || undefined}
       />
       {selectedAppointment && (
         <EditAppointmentDialog
@@ -230,12 +223,13 @@ export default function AfspraakBeheerPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <DatePickerInput
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              placeholderText="Filter op datum"
-              className="w-[240px]"
-            />
+            <div className="w-[240px]">
+              <DatePicker
+                date={selectedDate ?? undefined}
+                setDate={(date) => setSelectedDate(date ?? null)}
+                placeholder="Filter op datum"
+              />
+            </div>
             {selectedDate && (
               <Button
                 variant="ghost"

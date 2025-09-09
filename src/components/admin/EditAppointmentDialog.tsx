@@ -6,8 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as api from "@/lib/api";
 import { toast } from "sonner";
 import { format, setHours, setMinutes, setSeconds } from "date-fns";
-import { nl } from "date-fns/locale";
-import { cn } from "@/lib/utils";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -36,7 +34,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { DatePickerInput } from "@/components/DatePickerInput"; // Import the new component
+import { DatePicker } from "@/components/ui/datepicker";
 
 const appointmentSchema = z.object({
   service_type: z.enum(["Detailing", "Tuning", "Consultatie"]),
@@ -135,14 +133,12 @@ export function EditAppointmentDialog({
                 control={form.control}
                 name="requested_date"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col">
+                  <FormItem className="flex flex-col justify-end">
                     <FormLabel>Datum</FormLabel>
-                    <FormControl>
-                      <DatePickerInput
-                        selected={field.value}
-                        onChange={field.onChange}
-                      />
-                    </FormControl>
+                    <DatePicker
+                      date={field.value}
+                      setDate={field.onChange}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
