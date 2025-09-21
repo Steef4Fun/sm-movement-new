@@ -2,11 +2,22 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 interface StatusBadgeProps {
-  status: string;
+  status?: string | null;
   className?: string;
 }
 
 export const StatusBadge = ({ status, className }: StatusBadgeProps) => {
+  if (!status) {
+    return (
+      <Badge
+        variant="outline"
+        className={cn("capitalize bg-gray-100 text-gray-800 border-gray-200", className)}
+      >
+        Onbekend
+      </Badge>
+    );
+  }
+  
   const lowerCaseStatus = status.toLowerCase();
 
   const statusStyles: { [key: string]: string } = {

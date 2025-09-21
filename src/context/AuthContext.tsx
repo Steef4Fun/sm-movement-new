@@ -48,8 +48,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const userProfile = await api.getProfile();
       setProfile(userProfile);
-    } catch (error) {
-      console.error("Failed to fetch profile, logging out.", error);
+    } catch (error: any) {
+      // Don't show a console error for invalid tokens, as this is an expected state.
+      if (error && typeof error.message === 'string' && error.message.toLowerCase().includes('token')) {
+        console.log("Invalid token found, clearing session.");
+      } else {
+        console.error("Failed to fetch profile, logging out.", error);
+      }
       localStorage.removeItem("authToken");
       setProfile(null);
     } finally {
