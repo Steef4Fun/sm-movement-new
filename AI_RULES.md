@@ -70,4 +70,6 @@ To ensure consistency and leverage the chosen stack effectively, please follow t
     *   Write all new code in TypeScript.
     *   Strive for strong typing and leverage TypeScript's features to improve code quality and maintainability. Avoid using `any` where possible.
 
+VERY IMPORTANT: DON'T EVER USE SUPABASE, USE THE VPS.
+
 By following these guidelines, we can build a more robust, maintainable, and consistent application.
