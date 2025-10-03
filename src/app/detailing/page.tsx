@@ -109,7 +109,7 @@ export default function DetailingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
               >
-                <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter">
+                <h1 className="text-4xl md:text-6xl font-bold font-serif tracking-tight">
                   Professionele Detailing
                 </h1>
                 <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
@@ -144,7 +144,7 @@ export default function DetailingPage() {
                     viewport={{ once: true, amount: 0.3 }}
                     variants={cardVariants}
                   >
-                    <Card className="text-center h-full hover:shadow-lg transition-shadow duration-300 flex flex-col">
+                    <Card className="text-center h-full bg-card rounded-2xl border border-border/50 shadow-lg hover:shadow-2xl transition-all duration-300 hover:border-primary/30 hover:scale-[1.02] flex flex-col">
                       <CardHeader>
                         <div className="mx-auto bg-primary/10 p-4 rounded-full w-fit">
                           {service.icon}
@@ -211,7 +211,7 @@ export default function DetailingPage() {
                   schoon en glans. Neem contact op voor een afspraak.
                 </p>
                 <div className="mt-8">
-                  <Button asChild size="lg">
+                  <Button asChild size="lg" className="rounded-full">
                     <Link href="/contact">Maak een afspraak</Link>
                   </Button>
                 </div>

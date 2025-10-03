@@ -23,6 +23,8 @@ import {
 import { Car, Ship, Search, XCircle } from "lucide-react";
 import Link from "next/link";
 import { ListingCardSkeleton } from "@/components/skeletons/ListingCardSkeleton";
+import { CtaSection } from "@/components/cta-section";
+import { motion } from "framer-motion";
 
 type Listing = {
   id: string;
@@ -100,15 +102,17 @@ export default function AanbodPage() {
       <Header />
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="pt-32 pb-16 text-center bg-secondary/30">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tighter">
-              Exclusief Aanbod
-            </h1>
-            <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-              Ontdek onze zorgvuldig geselecteerde collectie van premium auto's
-              en luxe boten.
-            </p>
+        <section className="relative flex items-center justify-center h-[50vh] bg-gradient-to-br from-background to-muted">
+          <div className="absolute inset-0 bg-black/40 z-10" />
+          <div className="relative z-20 text-center text-white px-4">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
+              <h1 className="text-4xl md:text-6xl font-bold font-serif tracking-tight">
+                Exclusief Aanbod
+              </h1>
+              <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
+                Ontdek onze zorgvuldig geselecteerde collectie van premium auto's en luxe boten.
+              </p>
+            </motion.div>
           </div>
         </section>
 
@@ -116,7 +120,7 @@ export default function AanbodPage() {
         <section className="py-16 md:py-24">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {/* Filter Bar */}
-            <div className="mb-12 p-6 border rounded-lg bg-card">
+            <div className="mb-12 p-6 md:p-8 bg-card rounded-2xl shadow-lg border border-border/50">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                 <div className="space-y-2">
                   <label htmlFor="search" className="text-sm font-medium">
@@ -182,10 +186,10 @@ export default function AanbodPage() {
                 {filteredListings.map((item) => (
                   <Card
                     key={item.id}
-                    className="overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col hover:-translate-y-1"
+                    className="group cursor-pointer bg-card rounded-2xl shadow-lg border border-border/50 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-primary/30 group-hover:scale-[1.02] flex flex-col"
                   >
                     <CardHeader className="p-0">
-                      <div className="aspect-video bg-gradient-to-br from-secondary to-background flex items-center justify-center">
+                      <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
                         {item.type === "Auto" ? (
                           <Car className="h-16 w-16 text-muted-foreground" />
                         ) : (
@@ -210,14 +214,14 @@ export default function AanbodPage() {
                         )}
                       </div>
                     </CardContent>
-                    <CardFooter className="p-6 bg-secondary/30 flex justify-between items-center">
+                    <CardFooter className="p-6 bg-muted/30 flex justify-between items-center">
                       <p className="text-lg font-bold">
                         {new Intl.NumberFormat("nl-NL", {
                           style: "currency",
                           currency: "EUR",
                         }).format(item.price)}
                       </p>
-                      <Button asChild variant="outline">
+                      <Button asChild variant="outline" className="rounded-full">
                         <Link href={`/aanbod/${item.id}`}>Bekijk</Link>
                       </Button>
                     </CardFooter>
@@ -240,22 +244,7 @@ export default function AanbodPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-16 md:py-24 text-center bg-background border-t">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Zoekt u iets specifieks?
-            </h2>
-            <p className="mt-4 max-w-2xl mx-auto text-muted-foreground">
-              Ons netwerk reikt verder dan onze showroom. Laat ons weten wat u
-              zoekt, en wij gaan voor u op zoek naar uw droomvoertuig of -boot.
-            </p>
-            <div className="mt-8">
-              <Button asChild size="lg">
-                <Link href="/contact">Plaats een zoekopdracht</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
+        <CtaSection />
       </main>
       <Footer />
     </div>

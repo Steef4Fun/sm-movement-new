@@ -68,7 +68,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <Card>
+    <Card className="rounded-2xl shadow-lg border border-border/50">
       <CardHeader>
         <CardTitle>Mijn Profiel</CardTitle>
         <CardDescription>
@@ -106,7 +106,7 @@ export default function ProfilePage() {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button type="submit" disabled={form.formState.isSubmitting} className="rounded-full">
               {form.formState.isSubmitting ? "Opslaan..." : "Opslaan"}
             </Button>
           </CardFooter>

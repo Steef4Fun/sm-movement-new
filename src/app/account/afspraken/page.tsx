@@ -55,7 +55,7 @@ export default function AccountAfsprakenPage() {
   };
 
   return (
-    <Card>
+    <Card className="rounded-2xl shadow-lg border border-border/50">
       <CardHeader>
         <CardTitle>Mijn Afspraken</CardTitle>
         <CardDescription>

@@ -38,14 +38,14 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <main className="flex-grow flex items-center justify-center">
+      <main className="flex-grow flex items-center justify-center p-4">
         <Tabs defaultValue="login" className="w-full max-w-md">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Inloggen</TabsTrigger>
             <TabsTrigger value="register">Registreren</TabsTrigger>
           </TabsList>
           <TabsContent value="login">
-            <Card>
+            <Card className="rounded-2xl shadow-lg border border-border/50">
               <CardHeader>
                 <CardTitle>Inloggen</CardTitle>
                 <CardDescription>
@@ -62,13 +62,13 @@ export default function LoginPage() {
                     <Label htmlFor="login-password">Wachtwoord</Label>
                     <Input id="login-password" type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required />
                   </div>
-                  <Button type="submit" className="w-full">Inloggen</Button>
+                  <Button type="submit" className="w-full rounded-full">Inloggen</Button>
                 </form>
               </CardContent>
             </Card>
           </TabsContent>
           <TabsContent value="register">
-            <Card>
+            <Card className="rounded-2xl shadow-lg border border-border/50">
               <CardHeader>
                 <CardTitle>Registreren</CardTitle>
                 <CardDescription>
@@ -95,7 +95,7 @@ export default function LoginPage() {
                     <Label htmlFor="register-password">Wachtwoord</Label>
                     <Input id="register-password" type="password" value={registerPassword} onChange={(e) => setRegisterPassword(e.target.value)} required />
                   </div>
-                  <Button type="submit" className="w-full">Registreren</Button>
+                  <Button type="submit" className="w-full rounded-full">Registreren</Button>
                 </form>
               </CardContent>
             </Card>

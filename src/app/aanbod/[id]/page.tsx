@@ -66,7 +66,7 @@ export default function ListingDetailPage() {
             <p className="mt-4 text-muted-foreground">
               Het item dat u zoekt is niet (meer) beschikbaar.
             </p>
-            <Button asChild className="mt-8">
+            <Button asChild className="mt-8 rounded-full">
               <Link href="/aanbod">Terug naar aanbod</Link>
             </Button>
           </div>
@@ -91,28 +91,28 @@ export default function ListingDetailPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-grow pt-24 pb-12">
+      <main className="flex-grow pt-32 pb-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
             {/* Image Placeholder */}
-            <div className="aspect-video bg-gradient-to-br from-secondary to-background rounded-lg flex items-center justify-center">
+            <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted rounded-2xl flex items-center justify-center shadow-lg">
               {listing.type === "Auto" ? (
-                <Car className="h-24 w-24 text-muted-foreground" />
+                <Car className="h-24 w-24 text-muted-foreground/50" />
               ) : (
-                <Ship className="h-24 w-24 text-muted-foreground" />
+                <Ship className="h-24 w-24 text-muted-foreground/50" />
               )}
             </div>
 
             {/* Details */}
             <div className="flex flex-col justify-center">
-              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4">
+              <h1 className="text-4xl md:text-5xl font-bold font-serif tracking-tight mb-4">
                 {listing.name}
               </h1>
               <p className="text-lg text-muted-foreground mb-8">
                 {listing.description || "Geen omschrijving beschikbaar."}
               </p>
 
-              <Card>
+              <Card className="bg-card rounded-2xl shadow-lg border border-border/50">
                 <CardHeader>
                   <CardTitle>Specificaties</CardTitle>
                 </CardHeader>
@@ -133,7 +133,7 @@ export default function ListingDetailPage() {
                 </CardContent>
               </Card>
 
-              <Button asChild size="lg" className="mt-8 w-full md:w-auto">
+              <Button asChild size="lg" className="mt-8 w-full md:w-auto rounded-full">
                 <Link href="/contact">Neem contact op voor dit item</Link>
               </Button>
             </div>

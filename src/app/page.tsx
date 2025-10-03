@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
 import { SearchSection } from "@/components/search-section";
 import { BrandsSection } from "@/components/brands-section";
 import { FeaturedCars } from "@/components/featured-cars";
 import { Services } from "@/components/services";
-import { EVsPromo } from "@/components/evs-promo";
+import { CtaSection } from "@/components/cta-section";
 import { Footer } from "@/components/footer";
 import { Preloader } from "@/components/preloader";
 import { ScrollProgress } from "@/components/ScrollProgress";
@@ -63,7 +63,7 @@ export default function Home() {
               <Services id="services" />
             </div>
             <div id="zoekopdracht">
-              <EVsPromo />
+              <CtaSection />
             </div>
           </main>
           <Footer />

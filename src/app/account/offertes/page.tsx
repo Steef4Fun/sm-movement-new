@@ -67,7 +67,7 @@ export default function AccountOffertesPage() {
   };
 
   return (
-    <Card>
+    <Card className="rounded-2xl shadow-lg border border-border/50">
       <CardHeader>
         <CardTitle>Mijn Offertes</CardTitle>
         <CardDescription>
@@ -114,10 +114,10 @@ export default function AccountOffertesPage() {
                     <TableCell className="text-right">
                       {quote.status === 'in afwachting' && (
                         <div className="flex gap-2 justify-end">
-                          <Button size="sm" onClick={(e) => { e.stopPropagation(); handleStatusUpdate(quote.id, 'geaccepteerd'); }}>
+                          <Button size="sm" className="rounded-full" onClick={(e) => { e.stopPropagation(); handleStatusUpdate(quote.id, 'geaccepteerd'); }}>
                             Accepteren
                           </Button>
-                          <Button size="sm" variant="destructive" onClick={(e) => { e.stopPropagation(); handleStatusUpdate(quote.id, 'geweigerd'); }}>
+                          <Button size="sm" variant="destructive" className="rounded-full" onClick={(e) => { e.stopPropagation(); handleStatusUpdate(quote.id, 'geweigerd'); }}>
                             Weigeren
                           </Button>
                         </div>
