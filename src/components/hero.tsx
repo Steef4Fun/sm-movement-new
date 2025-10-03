@@ -22,7 +22,7 @@ export const Hero = ({ id }: { id: string }) => {
 
       {/* Hero Content */}
       <div className="relative z-20 container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl text-left">
+        <div className="max-w-3xl text-center mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -37,7 +37,7 @@ export const Hero = ({ id }: { id: string }) => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
-            className="mt-6 text-lg md:text-xl text-gray-300 max-w-xl"
+            className="mt-6 text-lg md:text-xl text-gray-300 max-w-xl mx-auto"
           >
             Jouw partner in premium auto's, luxe boten, meesterlijke detailing en performance tuning.
           </motion.p>
@@ -46,7 +46,7 @@ export const Hero = ({ id }: { id: string }) => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
-            className="mt-10 flex gap-4"
+            className="mt-10 flex justify-center gap-4"
           >
             <Button
               asChild

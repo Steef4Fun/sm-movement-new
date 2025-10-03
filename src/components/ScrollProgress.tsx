@@ -12,15 +12,18 @@ export const ScrollProgress = ({ sections }: ScrollProgressProps) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const windowHeight = window.innerHeight;
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
 
-      // Calculate the index of the section that should be active based on scroll position
-      const activeIndex = Math.round(scrollPosition / windowHeight);
-      
-      // Ensure the index is within the bounds of the sections array
-      if (activeIndex >= 0 && activeIndex < sections.length) {
-        setActiveSection(sections[activeIndex].id);
+      let currentSectionId = sections[0].id;
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (element && element.offsetTop <= scrollPosition) {
+          currentSectionId = section.id;
+        }
+      }
+
+      if (activeSection !== currentSectionId) {
+        setActiveSection(currentSectionId);
       }
     };
 
@@ -30,24 +33,25 @@ export const ScrollProgress = ({ sections }: ScrollProgressProps) => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [sections]);
+  }, [sections, activeSection]);
 
   return (
     <div className="fixed right-0 top-1/2 z-40 -translate-y-1/2 pr-4 md:pr-8 hidden lg:block">
       <div className="flex flex-col items-end gap-4">
-        {sections.map((section, index) => (
+        {sections.map((section) => (
           <a
             key={section.id}
             href={`#${section.id}`}
             className="group flex items-center gap-3"
             onClick={(e) => {
               e.preventDefault();
-              // Calculate the precise scroll position based on the section's index
-              const targetScrollY = index * window.innerHeight;
-              window.scrollTo({
-                top: targetScrollY,
-                behavior: "smooth",
-              });
+              const element = document.getElementById(section.id);
+              if (element) {
+                window.scrollTo({
+                  top: element.offsetTop,
+                  behavior: "smooth",
+                });
+              }
             }}
           >
             <span
