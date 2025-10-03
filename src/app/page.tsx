@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
+import { SearchSection } from "@/components/search-section";
+import { BrandsSection } from "@/components/brands-section";
+import { FeaturedCars } from "@/components/featured-cars";
 import { Services } from "@/components/services";
+import { EVsPromo } from "@/components/evs-promo";
 import { Footer } from "@/components/footer";
 import { Preloader } from "@/components/preloader";
 import { ScrollProgress } from "@/components/ScrollProgress";
@@ -13,7 +17,11 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const sections = [
     { id: "intro", label: "Introductie" },
+    { id: "search", label: "Zoeken" },
+    { id: "brands", label: "Merken" },
+    { id: "featured", label: "Uitgelicht" },
     { id: "services", label: "Expertise" },
+    { id: "zoekopdracht", label: "Zoekopdracht" },
   ];
 
   useEffect(() => {
@@ -30,31 +38,37 @@ export default function Home() {
     };
   }, []);
 
-  const sectionVariants: Variants = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1, transition: { duration: 0.8, ease: "easeInOut" } },
-    exit: { opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } },
-  };
-
   return (
     <>
       <AnimatePresence>{isLoading && <Preloader />}</AnimatePresence>
 
-      <div className="bg-background font-sans">
-        <Header />
-        {!isLoading && <ScrollProgress sections={sections} />}
-        <main>
-          <div className="relative h-[200vh]">
-            <motion.div variants={sectionVariants} initial="initial" animate="animate" exit="exit">
+      {!isLoading && (
+        <div className="bg-background font-sans">
+          <Header />
+          <ScrollProgress sections={sections} />
+          <main>
+            <div id="intro">
               <Hero id="intro" />
-            </motion.div>
-            <motion.div variants={sectionVariants} initial="initial" animate="animate" exit="exit">
+            </div>
+            <div id="search">
+              <SearchSection />
+            </div>
+            <div id="brands">
+              <BrandsSection />
+            </div>
+            <div id="featured">
+              <FeaturedCars />
+            </div>
+            <div id="services">
               <Services id="services" />
-            </motion.div>
-          </div>
-        </main>
-        <Footer />
-      </div>
+            </div>
+            <div id="zoekopdracht">
+              <EVsPromo />
+            </div>
+          </main>
+          <Footer />
+        </div>
+      )}
     </>
   );
 }
