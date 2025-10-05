@@ -28,7 +28,7 @@ interface QuoteEmailProps {
 
 export const sendAppointmentConfirmation = async (params: AppointmentEmailProps) => {
   try {
-    const html = render(AppointmentConfirmationEmail(params));
+    const html = await render(AppointmentConfirmationEmail(params));
     await resend.emails.send({
       from: fromEmail,
       to: params.email,
@@ -43,7 +43,7 @@ export const sendAppointmentConfirmation = async (params: AppointmentEmailProps)
 
 export const sendQuoteConfirmation = async (params: QuoteEmailProps) => {
   try {
-    const html = render(QuoteConfirmationEmail(params));
+    const html = await render(QuoteConfirmationEmail(params));
     await resend.emails.send({
       from: fromEmail,
       to: params.email,
