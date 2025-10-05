@@ -2,6 +2,7 @@ import { getSession } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { sendQuoteConfirmation } from '@/lib/mail';
+import bcrypt from 'bcryptjs';
 
 export async function GET(request: NextRequest) {
   const session = await getSession(request);
@@ -44,10 +45,18 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       isGuest = true;
+      // Generate a temporary, unusable password hash for the guest account
+      const salt = await bcrypt.genSalt(10);
+      const tempPassword = `guest_${Date.now()}_${Math.random()}`;
+      const hashedPassword = await bcrypt.hash(tempPassword, salt);
+
       user = await prisma.user.create({
         data: {
           email: customer_email,
           role: 'klant',
+          first_name: 'Nieuwe',
+          last_name: 'Klant',
+          password_hash: hashedPassword,
         },
       });
     }
