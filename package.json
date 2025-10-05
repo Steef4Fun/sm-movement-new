@@ -1,4 +1,13 @@
 {
+  "name": "sm-movement-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^5.17.0",
