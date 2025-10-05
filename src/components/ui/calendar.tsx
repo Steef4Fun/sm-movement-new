@@ -2,7 +2,8 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, DropdownProps } from "react-day-picker"
+import { DayPicker, DropdownProps, useDayPicker } from "react-day-picker"
+import { format } from "date-fns"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -61,53 +62,64 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
-        Dropdown: (props: DropdownProps) => {
-          const { fromYear, toYear, fromMonth, toMonth, fromDate, toDate } =
-            useDayPicker()
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
+        Dropdown: (dropdownProps: DropdownProps) => {
+          const { fromDate, fromMonth, fromYear, toDate, toMonth, toYear } = useDayPicker();
+          const { name, value } = dropdownProps;
 
-          const options: { label: string; value: string }[] = []
-          if (props.name === "months") {
-            // ...
-          } else if (props.name === "years") {
-            const earliestYear =
-              fromYear || fromMonth?.getFullYear() || fromDate?.getFullYear()
-            const latestYear =
-              toYear || toMonth?.getFullYear() || toDate?.getFullYear()
-
-            if (earliestYear && latestYear) {
-              for (let i = earliestYear; i <= latestYear; i++) {
-                options.push({ label: `${i}`, value: `${i}` })
-              }
+          const handleValueChange = (newValue: string) => {
+            const newDate = new Date(props.month || new Date());
+            if (name === "months") {
+              newDate.setMonth(parseInt(newValue));
+            } else if (name === "years") {
+              newDate.setFullYear(parseInt(newValue));
             }
-          }
+            props.onMonthChange?.(newDate);
+          };
 
-          return (
-            <Select
-              onValueChange={(newValue) => {
-                if (props.name === "months") {
-                  // ...
-                } else if (props.name === "years") {
-                  const newDate = new Date(props.value as Date)
-                  newDate.setFullYear(parseInt(newValue))
-                  // onChange?.(newDate);
-                }
-              }}
-              value={props.value as string}
-            >
-              <SelectTrigger>{props.value}</SelectTrigger>
-              <SelectContent>
-                <ScrollArea className="h-80">
-                  {options.map((option) => (
-                    <SelectItem key={option.label} value={option.value}>
-                      {option.label}
+          if (name === "months") {
+            const months = Array.from({ length: 12 }, (_, i) => new Date(2024, i));
+            return (
+              <Select onValueChange={handleValueChange} value={String(value)}>
+                <SelectTrigger>{format(new Date(2024, Number(value)), "MMMM")}</SelectTrigger>
+                <SelectContent>
+                  {months.map((m, i) => (
+                    <SelectItem key={i} value={String(i)}>
+                      {format(m, "MMMM")}
                     </SelectItem>
                   ))}
-                </ScrollArea>
-              </SelectContent>
-            </Select>
-          )
+                </SelectContent>
+              </Select>
+            );
+          }
+
+          if (name === "years") {
+            const earliestYear = fromYear || fromMonth?.getFullYear() || (fromDate as Date)?.getFullYear();
+            const latestYear = toYear || toMonth?.getFullYear() || (toDate as Date)?.getFullYear();
+            const years: number[] = [];
+            if (earliestYear && latestYear) {
+              for (let i = earliestYear; i <= latestYear; i++) {
+                years.push(i);
+              }
+            }
+            return (
+              <Select onValueChange={handleValueChange} value={String(value)}>
+                <SelectTrigger>{value}</SelectTrigger>
+                <SelectContent>
+                  <ScrollArea className="h-80">
+                    {years.map((year) => (
+                      <SelectItem key={year} value={String(year)}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </ScrollArea>
+                </SelectContent>
+              </Select>
+            );
+          }
+
+          return null;
         },
       }}
       {...props}

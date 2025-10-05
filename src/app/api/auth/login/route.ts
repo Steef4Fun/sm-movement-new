@@ -29,12 +29,15 @@ export async function POST(request: Request) {
       role: user.role,
     };
 
-    if (!process.env.JWT_SECRET || !process.env.JWT_EXPIRES_IN) {
+    const secret = process.env.JWT_SECRET;
+    const expiresIn = process.env.JWT_EXPIRES_IN;
+
+    if (!secret || !expiresIn) {
       throw new Error("JWT secret or expiration not configured.");
     }
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN,
+    const token = jwt.sign(payload, secret, {
+      expiresIn: expiresIn,
     });
 
     return NextResponse.json({ token });
