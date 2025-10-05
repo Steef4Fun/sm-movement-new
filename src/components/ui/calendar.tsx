@@ -2,19 +2,10 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { DayPicker, DropdownProps, useDayPicker } from "react-day-picker"
-import { format } from "date-fns"
+import { DayPicker } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { ScrollArea } from "./scroll-area"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -33,7 +24,6 @@ function Calendar({
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
         caption_label: "text-sm font-medium",
-        caption_dropdowns: "flex justify-center gap-1",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
@@ -46,15 +36,17 @@ function Calendar({
         head_cell:
           "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
         row: "flex w-full mt-2",
-        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
         day: cn(
           buttonVariants({ variant: "ghost" }),
           "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
         ),
+        day_range_end: "day-range-end",
         day_selected:
           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
         day_today: "bg-accent text-accent-foreground",
-        day_outside: "text-muted-foreground opacity-50",
+        day_outside:
+          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
         day_disabled: "text-muted-foreground opacity-50",
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
@@ -64,63 +56,6 @@ function Calendar({
       components={{
         IconLeft: () => <ChevronLeft className="h-4 w-4" />,
         IconRight: () => <ChevronRight className="h-4 w-4" />,
-        Dropdown: (dropdownProps: DropdownProps) => {
-          const { fromDate, fromMonth, fromYear, toDate, toMonth, toYear } = useDayPicker();
-          const { name, value } = dropdownProps;
-
-          const handleValueChange = (newValue: string) => {
-            const newDate = new Date(props.month || new Date());
-            if (name === "months") {
-              newDate.setMonth(parseInt(newValue));
-            } else if (name === "years") {
-              newDate.setFullYear(parseInt(newValue));
-            }
-            props.onMonthChange?.(newDate);
-          };
-
-          if (name === "months") {
-            const months = Array.from({ length: 12 }, (_, i) => new Date(2024, i));
-            return (
-              <Select onValueChange={handleValueChange} value={String(value)}>
-                <SelectTrigger>{format(new Date(2024, Number(value)), "MMMM")}</SelectTrigger>
-                <SelectContent>
-                  {months.map((m, i) => (
-                    <SelectItem key={i} value={String(i)}>
-                      {format(m, "MMMM")}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            );
-          }
-
-          if (name === "years") {
-            const earliestYear = fromYear || fromMonth?.getFullYear() || (fromDate as Date)?.getFullYear();
-            const latestYear = toYear || toMonth?.getFullYear() || (toDate as Date)?.getFullYear();
-            const years: number[] = [];
-            if (earliestYear && latestYear) {
-              for (let i = earliestYear; i <= latestYear; i++) {
-                years.push(i);
-              }
-            }
-            return (
-              <Select onValueChange={handleValueChange} value={String(value)}>
-                <SelectTrigger>{value}</SelectTrigger>
-                <SelectContent>
-                  <ScrollArea className="h-80">
-                    {years.map((year) => (
-                      <SelectItem key={year} value={String(year)}>
-                        {year}
-                      </SelectItem>
-                    ))}
-                  </ScrollArea>
-                </SelectContent>
-              </Select>
-            );
-          }
-
-          return null;
-        },
       }}
       {...props}
     />
