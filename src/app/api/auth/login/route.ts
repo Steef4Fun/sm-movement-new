@@ -30,18 +30,14 @@ export async function POST(request: Request) {
     };
 
     const secret = process.env.JWT_SECRET;
-    const expiresInEnv = process.env.JWT_EXPIRES_IN;
+    const expiresIn = process.env.JWT_EXPIRES_IN;
 
-    if (!secret || !expiresInEnv) {
+    if (!secret || !expiresIn) {
       throw new Error("JWT secret or expiration not configured.");
     }
 
-    // The type checker expects a number for expiresIn (seconds).
-    // We parse the environment variable string to a number.
-    const expiresIn = parseInt(expiresInEnv, 10);
-
     const options: SignOptions = {
-      expiresIn: expiresIn,
+      expiresIn: expiresIn, // Gebruik de string direct, bv. "7d"
     };
 
     const token = jwt.sign(payload, secret, options);
