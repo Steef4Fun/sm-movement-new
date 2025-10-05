@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { SignJWT } from 'jose';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -36,11 +36,13 @@ export async function POST(request: Request) {
       throw new Error("JWT secret or expiration not configured.");
     }
 
-    const options = {
-      expiresIn: expiresIn,
-    };
+    const secretKey = new TextEncoder().encode(secret);
 
-    const token = jwt.sign(payload, secret, options);
+    const token = await new SignJWT(payload)
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime(expiresIn)
+      .sign(secretKey);
 
     return NextResponse.json({ token });
   } catch (error) {
