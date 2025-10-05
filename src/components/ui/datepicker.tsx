@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { format } from "date-fns"
-import { nl } from "date-fns/locale"
 import { Calendar as CalendarIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -15,45 +14,36 @@ import {
 } from "@/components/ui/popover"
 
 interface DatePickerProps {
-  date: Date | undefined;
-  setDate: (date: Date | undefined) => void;
+  date?: Date;
+  setDate: (date?: Date) => void;
   placeholder?: string;
-  className?: string;
-  disabled?: (date: Date) => boolean;
   fromDate?: Date;
 }
 
-export function DatePicker({ date, setDate, placeholder = "Kies een datum", className, disabled, fromDate }: DatePickerProps) {
-  const [open, setOpen] = React.useState(false);
-
+export function DatePicker({ date, setDate, placeholder = "Kies een datum", fromDate }: DatePickerProps) {
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
           className={cn(
             "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground",
-            className
+            !date && "text-muted-foreground"
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP", { locale: nl }) : <span>{placeholder}</span>}
+          {date ? format(date, "PPP") : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
         <Calendar
           mode="single"
           selected={date}
-          onSelect={(newDate) => {
-            setDate(newDate);
-            setOpen(false);
-          }}
-          initialFocus
-          disabled={disabled}
+          onSelect={setDate}
           fromDate={fromDate}
-          captionLayout="dropdown-buttons"
-          fromYear={fromDate ? fromDate.getFullYear() : new Date().getFullYear() - 5}
+          initialFocus
+          captionLayout="dropdown"
+          fromYear={1960}
           toYear={new Date().getFullYear() + 5}
         />
       </PopoverContent>

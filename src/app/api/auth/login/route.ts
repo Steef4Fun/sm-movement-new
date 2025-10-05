@@ -29,7 +29,11 @@ export async function POST(request: Request) {
       role: user.role,
     };
 
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+    if (!process.env.JWT_SECRET || !process.env.JWT_EXPIRES_IN) {
+      throw new Error("JWT secret or expiration not configured.");
+    }
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
