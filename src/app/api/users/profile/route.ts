@@ -3,12 +3,16 @@ import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
+  console.log("PROFILE API: Request received.");
   const session = await getSession(request);
   if (!session) {
+    console.log("PROFILE API: No session found, unauthorized.");
     return NextResponse.json({ message: 'Niet geautoriseerd' }, { status: 401 });
   }
+  console.log("PROFILE API: Session found for user:", session.id);
 
   try {
+    console.log("PROFILE API: Attempting to fetch user from database...");
     const user = await prisma.user.findUnique({
       where: { id: session.id },
       select: {
@@ -19,10 +23,25 @@ export async function GET(request: NextRequest) {
         role: true,
       },
     });
-    if (!user) return NextResponse.json({ message: 'Gebruiker niet gevonden.' }, { status: 404 });
+
+    if (!user) {
+      console.log("PROFILE API: User not found in database.");
+      return NextResponse.json({ message: 'Gebruiker niet gevonden.' }, { status: 404 });
+    }
+    
+    console.log("PROFILE API: Successfully fetched user.");
     return NextResponse.json(user);
   } catch (err: any) {
-    return NextResponse.json({ message: err.message }, { status: 500 });
+    console.error("PROFILE API ERROR:", err); // Log the full error on the server
+    // Return a detailed error message to the client for debugging
+    return NextResponse.json(
+      { 
+        message: "Er is een serverfout opgetreden bij het ophalen van het profiel.",
+        error: err.message,
+        errorCode: err.code, // Include Prisma error code if available
+      }, 
+      { status: 500 }
+    );
   }
 }
 
@@ -46,7 +65,9 @@ export async function PUT(request: NextRequest) {
       },
     });
     return NextResponse.json(updatedUser);
-  } catch (err: any) {
+  } catch (err: any)
+  {
+    console.error("PROFILE UPDATE API ERROR:", err);
     return NextResponse.json({ message: err.message }, { status: 500 });
   }
 }
