@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'sm-movement-app', // Updated name for the unified app
-      script: 'pnpm',
+      name: 'sm-movement-app',
+      script: 'node_modules/.bin/next',
       args: 'start -p 3001',
       exec_mode: 'cluster',
       instances: 1,
