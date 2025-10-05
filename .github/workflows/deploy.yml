@@ -1,5 +1,5 @@
 # De naam van de workflow
-name: Deploy Frontend to VPS
+name: Deploy Application to VPS
 
 # Trigger: deze workflow draait bij elke push naar de 'main' branch
 on:
@@ -24,10 +24,8 @@ jobs:
         run: sudo apt-get install -y sshpass
 
       # Stap 3: Voer de deployment-commando's uit op de VPS
-      - name: Deploy Frontend to VPS
+      - name: Deploy Application to VPS
         run: |
-          # --- DE FIX IS HIER ---
-          # De '-o' optie heeft een '=' en een spatie nodig
           sshpass -p '${{ secrets.VPS_PASSWORD }}' ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
             set -e
 
@@ -37,13 +35,20 @@ jobs:
             git reset --hard origin/main
             git clean -fd
             
-            # Gebruik pnpm, de package manager die dit project verwacht
+            # Installeer alle dependencies (frontend & backend)
             pnpm install
             
+            # Genereer de Prisma client
+            pnpm prisma generate
+
+            # Draai eventuele nieuwe database migraties
+            pnpm prisma migrate deploy
+            
+            # Bouw de Next.js applicatie
             pnpm run build
             
             # Herstart de app via het stabiele ecosystem.config.js bestand
             pm2 restart ecosystem.config.js
             
-            echo "Frontend deployment is succesvol afgerond met pnpm."
+            echo "Applicatie deployment is succesvol afgerond."
           EOF

@@ -1,6 +1,6 @@
 import { toast } from "sonner";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = '/api'; // Use relative path for internal API
 
 async function request(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("authToken");
@@ -22,7 +22,6 @@ async function request(endpoint: string, options: RequestInit = {}) {
       const errorData = await response.json().catch(() => ({ message: "An unknown error occurred" }));
       throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
     }
-    // Handle responses with no content (e.g., 204)
     if (response.status === 204) {
       return null;
     }
