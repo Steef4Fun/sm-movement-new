@@ -1,6 +1,7 @@
 import { getSession } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
+import { sendAppointmentConfirmation } from '@/lib/mail';
 
 export async function GET(request: NextRequest) {
   const session = await getSession(request);
@@ -37,14 +38,37 @@ export async function POST(request: NextRequest) {
 
   try {
     const { customer_email, service_type, requested_date, notes } = await request.json();
-    const user = await prisma.user.findUnique({ where: { email: customer_email } });
-    if (!user) return NextResponse.json({ message: 'Klant niet gevonden.' }, { status: 404 });
+    
+    let user = await prisma.user.findUnique({ where: { email: customer_email } });
+    let isGuest = false;
+
+    if (!user) {
+      isGuest = true;
+      user = await prisma.user.create({
+        data: {
+          email: customer_email,
+          role: 'klant',
+        },
+      });
+    }
 
     const newAppointment = await prisma.appointment.create({
       data: { user_id: user.id, service_type, requested_date, notes },
     });
+
+    // Send confirmation email without blocking the response
+    sendAppointmentConfirmation({
+      email: user.email,
+      firstName: user.first_name,
+      serviceType: newAppointment.service_type,
+      requestedDate: newAppointment.requested_date.toISOString(),
+      notes: newAppointment.notes,
+      isGuest,
+    });
+
     return NextResponse.json(newAppointment, { status: 201 });
   } catch (err: any) {
-    return NextResponse.json({ message: 'Serverfout' }, { status: 500 });
+    console.error("Error creating appointment:", err);
+    return NextResponse.json({ message: 'Serverfout bij aanmaken afspraak.' }, { status: 500 });
   }
 }
