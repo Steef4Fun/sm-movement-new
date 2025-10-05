@@ -1,6 +1,6 @@
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
-import jwt, { SignOptions } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {
@@ -36,8 +36,8 @@ export async function POST(request: Request) {
       throw new Error("JWT secret or expiration not configured.");
     }
 
-    const options: SignOptions = {
-      expiresIn: expiresIn, // Gebruik de string direct, bv. "7d"
+    const options = {
+      expiresIn: expiresIn,
     };
 
     const token = jwt.sign(payload, secret, options);
