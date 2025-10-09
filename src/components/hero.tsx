@@ -24,22 +24,21 @@ export const Hero = ({ id }: { id: string }) => {
       <div className="relative z-20 container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl text-center mx-auto">
           <motion.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="text-4xl md:text-6xl font-bold text-white font-serif leading-tight"
+            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+            className="text-5xl md:text-8xl font-extrabold tracking-tighter mb-4 text-primary"
           >
-            Exclusiviteit in{" "}
-            <span className="text-primary">Beweging</span>
+            SM Movement
           </motion.h1>
-
           <motion.p
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="mt-6 text-lg md:text-xl text-gray-300 max-w-xl mx-auto"
+            transition={{ duration: 0.8, delay: 0.7, ease: "easeOut" }}
+            className="max-w-3xl mx-auto text-xl text-gray-200 font-serif"
           >
-            Jouw partner in premium auto's, luxe boten, meesterlijke detailing en performance tuning.
+            Exclusiviteit in beweging. Van premium auto's en luxe boten tot
+            meesterlijke detailing en tuning.
           </motion.p>
 
           <motion.div
