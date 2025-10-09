@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import * as api from "@/lib/api";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -20,11 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Car, Ship, Search, XCircle } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Car, Ship, Search, XCircle, Filter } from "lucide-react";
 import Link from "next/link";
 import { ListingCardSkeleton } from "@/components/skeletons/ListingCardSkeleton";
 import { CtaSection } from "@/components/cta-section";
-import { motion } from "framer-motion";
 
 type Listing = {
   id: string;
@@ -39,14 +40,17 @@ type Listing = {
   created_at: string;
 };
 
-export default function AanbodPage() {
+function AanbodContent() {
+  const searchParams = useSearchParams();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedType, setSelectedType] = useState("all");
-  const [selectedBrand, setSelectedBrand] = useState("all");
-  const [selectedCondition, setSelectedCondition] = useState("all");
-  const [sortBy, setSortBy] = useState("newest");
+
+  // Filter states
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "");
+  const [selectedType, setSelectedType] = useState(searchParams.get("type") || "all");
+  const [selectedBrand, setSelectedBrand] = useState(searchParams.get("brand") || "all");
+  const [selectedCondition, setSelectedCondition] = useState(searchParams.get("condition") || "all");
+  const [sortBy, setSortBy] = useState(searchParams.get("sortBy") || "newest");
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -71,24 +75,19 @@ export default function AanbodPage() {
   }, [listings]);
 
   const filteredListings = useMemo(() => {
-    let result = [...listings];
+    let result = listings.filter(l => l.status === 'beschikbaar');
 
     if (searchQuery) {
       result = result.filter((item) =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-
     if (selectedType !== "all") {
-      result = result.filter((item) =>
-        selectedType === "car" ? item.type === "Auto" : item.type === "Boot"
-      );
+      result = result.filter((item) => item.type.toLowerCase() === selectedType);
     }
-
     if (selectedBrand !== "all") {
       result = result.filter((item) => item.brand === selectedBrand);
     }
-
     if (selectedCondition !== "all") {
       result = result.filter((item) => item.condition === selectedCondition);
     }
@@ -105,7 +104,6 @@ export default function AanbodPage() {
         result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
     }
-
     return result;
   }, [listings, searchQuery, selectedType, sortBy, selectedBrand, selectedCondition]);
 
@@ -117,146 +115,150 @@ export default function AanbodPage() {
     setSortBy("newest");
   };
 
+  const FilterControls = () => (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <label htmlFor="search" className="text-sm font-medium">Zoek op naam/model</label>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input id="search" placeholder="Bijv. Audi RS6" className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="type" className="text-sm font-medium">Type</label>
+        <Select value={selectedType} onValueChange={setSelectedType}>
+          <SelectTrigger id="type"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alles</SelectItem>
+            <SelectItem value="Auto">Auto's</SelectItem>
+            <SelectItem value="Boot">Boten</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="brand" className="text-sm font-medium">Merk</label>
+        <Select value={selectedBrand} onValueChange={setSelectedBrand} disabled={uniqueBrands.length === 0}>
+          <SelectTrigger id="brand"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alle merken</SelectItem>
+            {uniqueBrands.map(brand => <SelectItem key={brand} value={brand}>{brand}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="condition" className="text-sm font-medium">Conditie</label>
+        <Select value={selectedCondition} onValueChange={setSelectedCondition}>
+          <SelectTrigger id="condition"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Nieuw & Gebruikt</SelectItem>
+            <SelectItem value="nieuw">Nieuw</SelectItem>
+            <SelectItem value="gebruikt">Gebruikt</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-2">
+        <label htmlFor="sort" className="text-sm font-medium">Sorteer op</label>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger id="sort"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="newest">Nieuwste eerst</SelectItem>
+            <SelectItem value="price-asc">Prijs (laag naar hoog)</SelectItem>
+            <SelectItem value="price-desc">Prijs (hoog naar laag)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <Button onClick={resetFilters} variant="ghost" className="w-full">Reset filters</Button>
+    </div>
+  );
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-grow">
-        {/* Hero Section */}
-        <section className="relative flex items-center justify-center h-[50vh] bg-gradient-to-br from-background to-muted">
-          <div className="absolute inset-0 bg-black/40 z-10" />
-          <div className="relative z-20 text-center text-white px-4">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
-              <h1 className="text-4xl md:text-6xl font-bold font-serif tracking-tight">
-                Exclusief Aanbod
-              </h1>
-              <p className="mt-4 max-w-3xl mx-auto text-lg text-gray-300">
-                Ontdek onze zorgvuldig geselecteerde collectie van premium auto's en luxe boten.
-              </p>
-            </motion.div>
-          </div>
-        </section>
+      <main className="flex-grow pt-24 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid lg:grid-cols-[280px_1fr] gap-8">
+            {/* Desktop Filters */}
+            <aside className="hidden lg:block">
+              <div className="sticky top-24">
+                <h3 className="text-lg font-semibold mb-4">Filters</h3>
+                <FilterControls />
+              </div>
+            </aside>
 
-        {/* Filters & Listings Section */}
-        <section className="py-16 md:py-24">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Filter Bar */}
-            <div className="mb-12 p-6 md:p-8 bg-card rounded-2xl shadow-lg border border-border/50">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-                <div className="space-y-2">
-                  <label htmlFor="search" className="text-sm font-medium">Zoek op naam/model</label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input id="search" placeholder="Bijv. Audi RS6" className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="type" className="text-sm font-medium">Type</label>
-                  <Select value={selectedType} onValueChange={setSelectedType}>
-                    <SelectTrigger id="type"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Alles</SelectItem>
-                      <SelectItem value="car">Auto's</SelectItem>
-                      <SelectItem value="boat">Boten</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="brand" className="text-sm font-medium">Merk</label>
-                  <Select value={selectedBrand} onValueChange={setSelectedBrand} disabled={uniqueBrands.length === 0}>
-                    <SelectTrigger id="brand"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Alle merken</SelectItem>
-                      {uniqueBrands.map(brand => <SelectItem key={brand} value={brand}>{brand}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="condition" className="text-sm font-medium">Conditie</label>
-                  <Select value={selectedCondition} onValueChange={setSelectedCondition}>
-                    <SelectTrigger id="condition"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Nieuw & Gebruikt</SelectItem>
-                      <SelectItem value="nieuw">Nieuw</SelectItem>
-                      <SelectItem value="gebruikt">Gebruikt</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="sort" className="text-sm font-medium">Sorteer op</label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger id="sort"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="newest">Nieuwste eerst</SelectItem>
-                      <SelectItem value="price-asc">Prijs (laag naar hoog)</SelectItem>
-                      <SelectItem value="price-desc">Prijs (hoog naar laag)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="mt-6 flex justify-end">
-                <Button onClick={resetFilters} variant="ghost">Reset filters</Button>
-              </div>
-            </div>
-
-            {/* Listings Grid */}
-            {loading ? (
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 3 }).map((_, i) => <ListingCardSkeleton key={i} />)}
-              </div>
-            ) : filteredListings.length > 0 ? (
-              <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {filteredListings.map((item) => (
-                  <Card
-                    key={item.id}
-                    className="group cursor-pointer bg-card rounded-2xl shadow-lg border border-border/50 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-primary/30 group-hover:scale-[1.02] flex flex-col"
-                  >
-                    <CardHeader className="p-0">
-                      <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
-                        {item.type === "Auto" ? (
-                          <Car className="h-16 w-16 text-muted-foreground" />
-                        ) : (
-                          <Ship className="h-16 w-16 text-muted-foreground" />
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-6 flex-grow">
-                      <CardTitle className="text-xl mb-2">{item.name}</CardTitle>
-                      <div className="text-sm text-muted-foreground space-y-1">
-                        {item.year && <p><strong>Bouwjaar:</strong> {item.year}</p>}
-                        {item.type === "Auto" && item.mileage != null && (
-                          <p><strong>Kilometerstand:</strong> {item.mileage.toLocaleString('nl-NL')} km</p>
-                        )}
-                        {item.type === "Boot" && item.sailing_hours != null && (
-                          <p><strong>Vaaruren:</strong> {item.sailing_hours}</p>
-                        )}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="p-6 bg-muted/30 flex justify-between items-center">
-                      <p className="text-lg font-bold">
-                        {new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(item.price)}
-                      </p>
-                      <Button asChild variant="outline" className="rounded-full">
-                        <Link href={`/aanbod/${item.id}`}>Bekijk</Link>
+            {/* Mobile Filters & Listings */}
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h1 className="text-2xl font-bold tracking-tight">
+                  Ons Aanbod ({filteredListings.length})
+                </h1>
+                <div className="lg:hidden">
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button variant="outline" size="icon">
+                        <Filter className="h-4 w-4" />
                       </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
+                    </SheetTrigger>
+                    <SheetContent>
+                      <h3 className="text-lg font-semibold mb-4">Filters</h3>
+                      <FilterControls />
+                    </SheetContent>
+                  </Sheet>
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-16 flex flex-col items-center">
-                <XCircle className="h-16 w-16 text-muted-foreground mb-4" />
-                <h2 className="text-2xl font-bold tracking-tight">Geen resultaten gevonden</h2>
-                <p className="mt-2 text-muted-foreground mb-6">Probeer uw zoekopdracht aan te passen.</p>
-                <Button onClick={resetFilters}>Reset filters</Button>
-              </div>
-            )}
-          </div>
-        </section>
 
-        {/* CTA Section */}
+              {loading ? (
+                <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+                  {Array.from({ length: 6 }).map((_, i) => <ListingCardSkeleton key={i} />)}
+                </div>
+              ) : filteredListings.length > 0 ? (
+                <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+                  {filteredListings.map((item) => (
+                    <Card
+                      key={item.id}
+                      className="group cursor-pointer bg-card rounded-2xl shadow-lg border border-border/50 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-primary/30 group-hover:scale-[1.02] flex flex-col"
+                    >
+                      <CardHeader className="p-0">
+                        <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
+                          {item.type === "Auto" ? <Car className="h-16 w-16 text-muted-foreground" /> : <Ship className="h-16 w-16 text-muted-foreground" />}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-6 flex-grow">
+                        <CardTitle className="text-xl mb-2">{item.name}</CardTitle>
+                        <div className="text-sm text-muted-foreground space-y-1">
+                          {item.year && <p><strong>Bouwjaar:</strong> {item.year}</p>}
+                          {item.type === "Auto" && item.mileage != null && <p><strong>KM:</strong> {item.mileage.toLocaleString('nl-NL')} km</p>}
+                          {item.type === "Boot" && item.sailing_hours != null && <p><strong>Vaaruren:</strong> {item.sailing_hours}</p>}
+                        </div>
+                      </CardContent>
+                      <CardFooter className="p-6 bg-muted/30 flex justify-between items-center">
+                        <p className="text-lg font-bold">{new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(item.price)}</p>
+                        <Button asChild variant="outline" className="rounded-full"><Link href={`/aanbod/${item.id}`}>Bekijk</Link></Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16 flex flex-col items-center col-span-full">
+                  <XCircle className="h-16 w-16 text-muted-foreground mb-4" />
+                  <h2 className="text-2xl font-bold tracking-tight">Geen resultaten gevonden</h2>
+                  <p className="mt-2 text-muted-foreground mb-6">Probeer uw zoekopdracht aan te passen.</p>
+                  <Button onClick={resetFilters}>Reset filters</Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
         <CtaSection />
       </main>
       <Footer />
     </div>
+  );
+}
+
+export default function AanbodPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AanbodContent />
+    </Suspense>
   );
 }
