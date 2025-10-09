@@ -38,6 +38,7 @@ type Listing = {
   sailing_hours: number | null;
   price: number;
   created_at: string;
+  status: string;
 };
 
 function AanbodContent() {

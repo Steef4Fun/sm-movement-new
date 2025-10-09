@@ -43,7 +43,7 @@ const listingSchema = z.object({
   sailing_hours: z.coerce.number().int().positive("Vaaruren moeten een positief getal zijn.").optional().or(z.literal('')),
   price: z.coerce.number().positive("Prijs moet een positief getal zijn."),
   description: z.string().optional(),
-  condition: z.enum(["nieuw", "gebruikt"]).default("gebruikt"),
+  condition: z.enum(["nieuw", "gebruikt"]),
 });
 
 type ListingFormValues = z.infer<typeof listingSchema>;
