@@ -10,6 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Car, Ship, Calendar, Gauge, Clock, Euro } from "lucide-react";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 type Listing = {
   id: string;
@@ -22,6 +30,8 @@ type Listing = {
   sailing_hours: number | null;
   price: number;
   description: string | null;
+  images: string[];
+  videos: string[];
 };
 
 export default function ListingDetailPage() {
@@ -94,12 +104,30 @@ export default function ListingDetailPage() {
       <main className="flex-grow pt-32 pb-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-            {/* Image Placeholder */}
-            <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted rounded-2xl flex items-center justify-center shadow-lg">
-              {listing.type === "Auto" ? (
-                <Car className="h-24 w-24 text-muted-foreground/50" />
+            {/* Image Gallery */}
+            <div>
+              {listing.images && listing.images.length > 0 ? (
+                <Carousel className="w-full rounded-2xl overflow-hidden shadow-lg">
+                  <CarouselContent>
+                    {listing.images.map((src, index) => (
+                      <CarouselItem key={index}>
+                        <div className="relative aspect-video">
+                          <Image src={src} alt={`${listing.name} image ${index + 1}`} layout="fill" className="object-cover" />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="ml-16" />
+                  <CarouselNext className="mr-16" />
+                </Carousel>
               ) : (
-                <Ship className="h-24 w-24 text-muted-foreground/50" />
+                <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted rounded-2xl flex items-center justify-center shadow-lg">
+                  {listing.type === "Auto" ? (
+                    <Car className="h-24 w-24 text-muted-foreground/50" />
+                  ) : (
+                    <Ship className="h-24 w-24 text-muted-foreground/50" />
+                  )}
+                </div>
               )}
             </div>
 
@@ -138,6 +166,20 @@ export default function ListingDetailPage() {
               </Button>
             </div>
           </div>
+
+          {/* Videos Section */}
+          {listing.videos && listing.videos.length > 0 && (
+            <div className="mt-16">
+              <h2 className="text-3xl font-bold text-center mb-8">Videos</h2>
+              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                {listing.videos.map((src, index) => (
+                  <div key={index} className="aspect-video rounded-2xl overflow-hidden shadow-lg">
+                    <video controls src={src} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />

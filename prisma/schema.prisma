@@ -1,22 +1,19 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
 model User {
-  id            String        @id @default(cuid())
+  id            String        @id @default(uuid())
   email         String        @unique
   password_hash String
   first_name    String?
   last_name     String?
-  role          String        @default("klant") // "klant" or "admin"
+  role          String        @default("klant") // klant, admin
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt
   appointments  Appointment[]
@@ -24,41 +21,43 @@ model User {
 }
 
 model Listing {
-  id            String   @id @default(cuid())
+  id            String   @id @default(uuid())
   type          String // "Auto" or "Boot"
   name          String
+  price         Float
+  description   String?
+  status        String   @default("beschikbaar") // beschikbaar, verkocht, gereserveerd
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
   brand         String?
   model         String?
   year          Int?
   mileage       Int?
   sailing_hours Int?
-  price         Float
-  description   String?
-  status        String   @default("beschikbaar") // "beschikbaar", "gereserveerd", "verkocht"
-  condition     String   @default("gebruikt") // "nieuw" or "gebruikt"
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  condition     String   @default("gebruikt") // nieuw, gebruikt
+  images        String[] @default([])
+  videos        String[] @default([])
 }
 
 model Appointment {
-  id             String   @id @default(cuid())
+  id             String   @id @default(uuid())
   user_id        String
   service_type   String
   requested_date DateTime
   notes          String?
-  status         String   @default("in afwachting") // "in afwachting", "bevestigd", "geannuleerd"
+  status         String   @default("in afwachting") // in afwachting, bevestigd, geannuleerd
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
   user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Quote {
-  id          String   @id @default(cuid())
+  id          String   @id @default(uuid())
   user_id     String
   subject     String
   amount      Float
   description String?
-  status      String   @default("in afwachting") // "in afwachting", "geaccepteerd", "geweigerd"
+  status      String   @default("in afwachting") // in afwachting, geaccepteerd, geweigerd
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)

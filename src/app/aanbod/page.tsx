@@ -26,6 +26,7 @@ import { Car, Ship, Search, XCircle, Filter } from "lucide-react";
 import Link from "next/link";
 import { ListingCardSkeleton } from "@/components/skeletons/ListingCardSkeleton";
 import { CtaSection } from "@/components/cta-section";
+import Image from "next/image";
 
 type Listing = {
   id: string;
@@ -39,6 +40,7 @@ type Listing = {
   price: number;
   created_at: string;
   status: string;
+  images: string[];
 };
 
 function AanbodContent() {
@@ -218,10 +220,14 @@ function AanbodContent() {
                       key={item.id}
                       className="group cursor-pointer bg-card rounded-2xl shadow-lg border border-border/50 overflow-hidden transition-all duration-300 hover:shadow-2xl hover:border-primary/30 group-hover:scale-[1.02] flex flex-col"
                     >
-                      <CardHeader className="p-0">
-                        <div className="aspect-video bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
-                          {item.type === "Auto" ? <Car className="h-16 w-16 text-muted-foreground" /> : <Ship className="h-16 w-16 text-muted-foreground" />}
-                        </div>
+                      <CardHeader className="p-0 relative aspect-video">
+                        {item.images && item.images.length > 0 ? (
+                          <Image src={item.images[0]} alt={item.name} layout="fill" className="object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-muted/50 to-muted flex items-center justify-center">
+                            {item.type === "Auto" ? <Car className="h-16 w-16 text-muted-foreground" /> : <Ship className="h-16 w-16 text-muted-foreground" />}
+                          </div>
+                        )}
                       </CardHeader>
                       <CardContent className="p-6 flex-grow">
                         <CardTitle className="text-xl mb-2">{item.name}</CardTitle>

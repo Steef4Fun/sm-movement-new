@@ -5,10 +5,15 @@ const API_BASE_URL = '/api'; // Use relative path for internal API
 async function request(endpoint: string, options: RequestInit = {}) {
   const token = localStorage.getItem("authToken");
   const headers = new Headers(options.headers || {});
-  headers.set("Content-Type", "application/json");
-
+  
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  // The browser will automatically set the Content-Type for FormData.
+  // For other request types, we set it to application/json.
+  if (!(options.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
   }
 
   const config: RequestInit = {
@@ -50,8 +55,8 @@ export const deleteUser = (userId: string) => request(`/users/${userId}`, { meth
 // --- Listings ---
 export const getListings = () => request('/listings');
 export const getListingById = (id: string) => request(`/listings/${id}`);
-export const createListing = (listingData: any) => request('/listings', { method: 'POST', body: JSON.stringify(listingData) });
-export const updateListing = (id: string, listingData: any) => request(`/listings/${id}`, { method: 'PUT', body: JSON.stringify(listingData) });
+export const createListing = (formData: FormData) => request('/listings', { method: 'POST', body: formData });
+export const updateListing = (id: string, formData: FormData) => request(`/listings/${id}`, { method: 'PUT', body: formData });
 export const deleteListing = (id: string) => request(`/listings/${id}`, { method: 'DELETE' });
 
 // --- Appointments ---
