@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server';
-import formidable, { File, Fields, Files } from 'formidable';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -9,49 +8,29 @@ export const UPLOAD_DIR = path.join(process.cwd(), 'public/uploads');
 // Ensure the upload directory exists
 fs.mkdir(UPLOAD_DIR, { recursive: true });
 
-interface FormidableParseResult {
-  fields: Fields;
-  files: Files;
-}
-
 /**
- * Parses a multipart form request.
- * @param req The Next.js request object.
- * @returns A promise that resolves with the parsed fields and files.
+ * Saves an array of files to the upload directory.
+ * @param files An array of File objects from FormData.
+ * @returns A promise that resolves with an array of public URL paths.
  */
-export const parseForm = (req: NextRequest): Promise<FormidableParseResult> => {
-  return new Promise((resolve, reject) => {
-    const form = formidable({
-      multiples: true,
-      uploadDir: UPLOAD_DIR,
-      keepExtensions: true,
-      // Create a unique filename to avoid overwrites
-      filename: (name, ext, part) => {
-        const originalFilename = part.originalFilename || 'file';
-        return `${Date.now()}_${Math.round(Math.random() * 1E9)}_${originalFilename.replace(/\s+/g, '_')}`;
-      },
-    });
+export const saveFiles = async (files: File[]): Promise<string[]> => {
+  const savedPaths: string[] = [];
 
-    form.parse(req as any, (err, fields, files) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ fields, files });
-      }
-    });
-  });
+  for (const file of files) {
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // Create a unique filename
+    const filename = `${Date.now()}_${Math.round(Math.random() * 1E9)}_${file.name.replace(/\s+/g, '_')}`;
+    const filePath = path.join(UPLOAD_DIR, filename);
+
+    await fs.writeFile(filePath, buffer);
+    savedPaths.push(`/uploads/${filename}`);
+  }
+
+  return savedPaths;
 };
 
-/**
- * Converts formidable File objects to public URL paths.
- * @param files A File, an array of Files, or undefined.
- * @returns An array of public URL strings.
- */
-export const getPublicPaths = (files: File | File[] | undefined): string[] => {
-  if (!files) return [];
-  const fileArray = Array.isArray(files) ? files : [files];
-  return fileArray.map(file => `/uploads/${path.basename(file.filepath)}`);
-};
 
 /**
  * Deletes a file from the public uploads directory.

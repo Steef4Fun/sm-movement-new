@@ -1,9 +1,8 @@
 import { getSession } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
-import { parseForm, getPublicPaths, deleteFile } from '@/lib/upload';
+import { saveFiles, deleteFile } from '@/lib/upload';
 
-export const runtime = 'nodejs';
 export const maxDuration = 60; // 60 seconds
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
@@ -30,22 +29,35 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       return NextResponse.json({ message: 'Item niet gevonden.' }, { status: 404 });
     }
 
-    const { fields, files } = await parseForm(request);
-    const { type, name, price, description, status, brand, model, year, mileage, sailing_hours, condition, existingImages, existingVideos } = fields;
+    const formData = await request.formData();
+    
+    const type = formData.get('type') as string;
+    const name = formData.get('name') as string;
+    const price = formData.get('price') as string;
+    const description = formData.get('description') as string | null;
+    const status = formData.get('status') as string;
+    const brand = formData.get('brand') as string | null;
+    const model = formData.get('model') as string | null;
+    const year = formData.get('year') as string | null;
+    const mileage = formData.get('mileage') as string | null;
+    const sailing_hours = formData.get('sailing_hours') as string | null;
+    const condition = formData.get('condition') as string;
 
-    const typeValue = Array.isArray(type) ? type[0] : type;
-    const nameValue = Array.isArray(name) ? name[0] : name;
-    const priceValue = Array.isArray(price) ? price[0] : price;
+    const existingImages = formData.getAll('existingImages') as string[];
+    const existingVideos = formData.getAll('existingVideos') as string[];
+    
+    const newImages = formData.getAll('images').filter((val): val is File => val instanceof File);
+    const newVideos = formData.getAll('videos').filter((val): val is File => val instanceof File);
 
-    if (!typeValue || !nameValue || !priceValue) {
+    if (!type || !name || !price) {
       return NextResponse.json({ message: 'Type, naam en prijs zijn verplichte velden.' }, { status: 400 });
     }
 
-    const newImagePaths = getPublicPaths(files.images);
-    const newVideoPaths = getPublicPaths(files.videos);
+    const newImagePaths = await saveFiles(newImages);
+    const newVideoPaths = await saveFiles(newVideos);
 
-    const finalImagePaths = [...(Array.isArray(existingImages) ? existingImages : existingImages ? [existingImages] : []), ...newImagePaths];
-    const finalVideoPaths = [...(Array.isArray(existingVideos) ? existingVideos : existingVideos ? [existingVideos] : []), ...newVideoPaths];
+    const finalImagePaths = [...existingImages, ...newImagePaths];
+    const finalVideoPaths = [...existingVideos, ...newVideoPaths];
 
     // Delete files that were removed
     const imagesToDelete = existingListing.images.filter(img => !finalImagePaths.includes(img));
@@ -55,17 +67,17 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     const updatedListing = await prisma.listing.update({
       where: { id: params.id },
       data: { 
-        type: typeValue,
-        name: nameValue,
-        price: parseFloat(priceValue),
-        description: Array.isArray(description) ? description[0] : description,
-        status: Array.isArray(status) ? status[0] : status,
-        brand: Array.isArray(brand) ? brand[0] : brand,
-        model: Array.isArray(model) ? model[0] : model,
-        year: year && year[0] ? parseInt(year[0]) : null,
-        mileage: mileage && mileage[0] ? parseInt(mileage[0]) : null,
-        sailing_hours: sailing_hours && sailing_hours[0] ? parseInt(sailing_hours[0]) : null,
-        condition: Array.isArray(condition) ? condition[0] : condition,
+        type,
+        name,
+        price: parseFloat(price),
+        description,
+        status,
+        brand,
+        model,
+        year: year ? parseInt(year) : null,
+        mileage: mileage ? parseInt(mileage) : null,
+        sailing_hours: sailing_hours ? parseInt(sailing_hours) : null,
+        condition,
         images: finalImagePaths,
         videos: finalVideoPaths,
       },
