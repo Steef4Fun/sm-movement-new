@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseForm, getPublicPaths, deleteFile } from '@/lib/upload';
 
+export const runtime = 'nodejs';
 export const maxDuration = 60; // 60 seconds
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
