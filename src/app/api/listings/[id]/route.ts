@@ -21,10 +21,21 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 
   try {
-    const { type, name, price, description, status } = await request.json();
+    const { type, name, price, description, status, brand, model, year, mileage, sailing_hours } = await request.json();
     const updatedListing = await prisma.listing.update({
       where: { id: params.id },
-      data: { type, name, price, description, status },
+      data: { 
+        type, 
+        name, 
+        price, 
+        description, 
+        status,
+        brand,
+        model,
+        year,
+        mileage,
+        sailing_hours
+      },
     });
     return NextResponse.json(updatedListing);
   } catch (err: any) {
