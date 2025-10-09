@@ -1,6 +1,7 @@
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { NextResponse } from 'next/server';
+import { sendWelcomeEmail } from '@/lib/mail';
 
 export async function POST(request: Request) {
   try {
@@ -13,13 +14,19 @@ export async function POST(request: Request) {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    await prisma.user.create({
+    const newUser = await prisma.user.create({
       data: {
         email,
         password_hash: hashedPassword,
         first_name,
         last_name,
       },
+    });
+
+    // Send welcome email
+    await sendWelcomeEmail({
+      email: newUser.email,
+      firstName: newUser.first_name,
     });
 
     return NextResponse.json({ message: "Registratie succesvol." }, { status: 201 });
