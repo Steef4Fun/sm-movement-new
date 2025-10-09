@@ -11,12 +11,12 @@ datasource db {
 }
 
 model User {
-  id            String        @id @default(uuid())
+  id            String        @id @default(cuid())
   email         String        @unique
   password_hash String
-  first_name    String
-  last_name     String
-  role          Role          @default(klant)
+  first_name    String?
+  last_name     String?
+  role          String        @default("klant") // "klant" or "admin"
   created_at    DateTime      @default(now())
   updated_at    DateTime      @updatedAt
   appointments  Appointment[]
@@ -24,8 +24,8 @@ model User {
 }
 
 model Listing {
-  id            String        @id @default(uuid())
-  type          ListingType
+  id            String   @id @default(cuid())
+  type          String // "Auto" or "Boot"
   name          String
   brand         String?
   model         String?
@@ -34,65 +34,32 @@ model Listing {
   sailing_hours Int?
   price         Float
   description   String?
-  status        ListingStatus @default(beschikbaar)
-  created_at    DateTime      @default(now())
-  updated_at    DateTime      @updatedAt
+  status        String   @default("beschikbaar") // "beschikbaar", "gereserveerd", "verkocht"
+  condition     String   @default("gebruikt") // "nieuw" or "gebruikt"
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 }
 
 model Appointment {
-  id             String            @id @default(uuid())
+  id             String   @id @default(cuid())
   user_id        String
-  service_type   ServiceType
+  service_type   String
   requested_date DateTime
   notes          String?
-  status         AppointmentStatus @default(in_afwachting)
-  created_at     DateTime          @default(now())
-  updated_at     DateTime          @updatedAt
-  user           User              @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  status         String   @default("in afwachting") // "in afwachting", "bevestigd", "geannuleerd"
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Quote {
-  id          String      @id @default(uuid())
+  id          String   @id @default(cuid())
   user_id     String
   subject     String
   amount      Float
   description String?
-  status      QuoteStatus @default(in_afwachting)
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @updatedAt
-  user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
-}
-
-enum Role {
-  klant
-  admin
-}
-
-enum ListingType {
-  Auto
-  Boot
-}
-
-enum ListingStatus {
-  beschikbaar
-  verkocht
-  gereserveerd
-}
-
-enum ServiceType {
-  Detailing
-  Tuning
-  Consultatie
-}
-
-enum AppointmentStatus {
-  in_afwachting
-  bevestigd
-  geannuleerd
-}
-
-enum QuoteStatus {
-  in_afwachting
-  geaccepteerd
-  geweigerd
+  status      String   @default("in afwachting") // "in afwachting", "geaccepteerd", "geweigerd"
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

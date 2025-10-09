@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { type, name, price, description, brand, model, year, mileage, sailing_hours } = await request.json();
+    const { type, name, price, description, brand, model, year, mileage, sailing_hours, condition } = await request.json();
     const newListing = await prisma.listing.create({
       data: { 
         type, 
@@ -31,7 +31,8 @@ export async function POST(request: NextRequest) {
         model,
         year,
         mileage,
-        sailing_hours
+        sailing_hours,
+        condition
       },
     });
     return NextResponse.json(newListing, { status: 201 });

@@ -30,6 +30,8 @@ type Listing = {
   id: string;
   type: "Auto" | "Boot";
   name: string;
+  brand: string | null;
+  condition: string;
   year: number | null;
   mileage: number | null;
   sailing_hours: number | null;
@@ -42,6 +44,8 @@ export default function AanbodPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
+  const [selectedBrand, setSelectedBrand] = useState("all");
+  const [selectedCondition, setSelectedCondition] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
 
   const fetchListings = useCallback(async () => {
@@ -60,6 +64,12 @@ export default function AanbodPage() {
     fetchListings();
   }, [fetchListings]);
 
+  const uniqueBrands = useMemo(() => {
+    if (!listings) return [];
+    const brands = new Set(listings.map(l => l.brand).filter((b): b is string => !!b));
+    return Array.from(brands).sort();
+  }, [listings]);
+
   const filteredListings = useMemo(() => {
     let result = [...listings];
 
@@ -73,6 +83,14 @@ export default function AanbodPage() {
       result = result.filter((item) =>
         selectedType === "car" ? item.type === "Auto" : item.type === "Boot"
       );
+    }
+
+    if (selectedBrand !== "all") {
+      result = result.filter((item) => item.brand === selectedBrand);
+    }
+
+    if (selectedCondition !== "all") {
+      result = result.filter((item) => item.condition === selectedCondition);
     }
 
     switch (sortBy) {
@@ -89,11 +107,13 @@ export default function AanbodPage() {
     }
 
     return result;
-  }, [listings, searchQuery, selectedType, sortBy]);
+  }, [listings, searchQuery, selectedType, sortBy, selectedBrand, selectedCondition]);
 
   const resetFilters = () => {
     setSearchQuery("");
     setSelectedType("all");
+    setSelectedBrand("all");
+    setSelectedCondition("all");
     setSortBy("newest");
   };
 
@@ -121,30 +141,18 @@ export default function AanbodPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             {/* Filter Bar */}
             <div className="mb-12 p-6 md:p-8 bg-card rounded-2xl shadow-lg border border-border/50">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
                 <div className="space-y-2">
-                  <label htmlFor="search" className="text-sm font-medium">
-                    Zoekterm
-                  </label>
+                  <label htmlFor="search" className="text-sm font-medium">Zoek op naam/model</label>
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="search"
-                      placeholder="Bijv. Audi RS6"
-                      className="pl-10"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+                    <Input id="search" placeholder="Bijv. Audi RS6" className="pl-10" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="type" className="text-sm font-medium">
-                    Type
-                  </label>
+                  <label htmlFor="type" className="text-sm font-medium">Type</label>
                   <Select value={selectedType} onValueChange={setSelectedType}>
-                    <SelectTrigger id="type">
-                      <SelectValue />
-                    </SelectTrigger>
+                    <SelectTrigger id="type"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Alles</SelectItem>
                       <SelectItem value="car">Auto's</SelectItem>
@@ -153,33 +161,47 @@ export default function AanbodPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <label htmlFor="sort" className="text-sm font-medium">
-                    Sorteer op
-                  </label>
-                  <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger id="sort">
-                      <SelectValue />
-                    </SelectTrigger>
+                  <label htmlFor="brand" className="text-sm font-medium">Merk</label>
+                  <Select value={selectedBrand} onValueChange={setSelectedBrand} disabled={uniqueBrands.length === 0}>
+                    <SelectTrigger id="brand"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="newest">Nieuwste eerst</SelectItem>
-                      <SelectItem value="price-asc">
-                        Prijs (laag naar hoog)
-                      </SelectItem>
-                      <SelectItem value="price-desc">
-                        Prijs (hoog naar laag)
-                      </SelectItem>
+                      <SelectItem value="all">Alle merken</SelectItem>
+                      {uniqueBrands.map(brand => <SelectItem key={brand} value={brand}>{brand}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="space-y-2">
+                  <label htmlFor="condition" className="text-sm font-medium">Conditie</label>
+                  <Select value={selectedCondition} onValueChange={setSelectedCondition}>
+                    <SelectTrigger id="condition"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Nieuw & Gebruikt</SelectItem>
+                      <SelectItem value="nieuw">Nieuw</SelectItem>
+                      <SelectItem value="gebruikt">Gebruikt</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="sort" className="text-sm font-medium">Sorteer op</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger id="sort"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="newest">Nieuwste eerst</SelectItem>
+                      <SelectItem value="price-asc">Prijs (laag naar hoog)</SelectItem>
+                      <SelectItem value="price-desc">Prijs (hoog naar laag)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <Button onClick={resetFilters} variant="ghost">Reset filters</Button>
               </div>
             </div>
 
             {/* Listings Grid */}
             {loading ? (
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                {Array.from({ length: 3 }).map((_, i) => (
-                  <ListingCardSkeleton key={i} />
-                ))}
+                {Array.from({ length: 3 }).map((_, i) => <ListingCardSkeleton key={i} />)}
               </div>
             ) : filteredListings.length > 0 ? (
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -202,24 +224,16 @@ export default function AanbodPage() {
                       <div className="text-sm text-muted-foreground space-y-1">
                         {item.year && <p><strong>Bouwjaar:</strong> {item.year}</p>}
                         {item.type === "Auto" && item.mileage != null && (
-                          <p>
-                            <strong>Kilometerstand:</strong>{" "}
-                            {item.mileage.toLocaleString('nl-NL')} km
-                          </p>
+                          <p><strong>Kilometerstand:</strong> {item.mileage.toLocaleString('nl-NL')} km</p>
                         )}
                         {item.type === "Boot" && item.sailing_hours != null && (
-                          <p>
-                            <strong>Vaaruren:</strong> {item.sailing_hours}
-                          </p>
+                          <p><strong>Vaaruren:</strong> {item.sailing_hours}</p>
                         )}
                       </div>
                     </CardContent>
                     <CardFooter className="p-6 bg-muted/30 flex justify-between items-center">
                       <p className="text-lg font-bold">
-                        {new Intl.NumberFormat("nl-NL", {
-                          style: "currency",
-                          currency: "EUR",
-                        }).format(item.price)}
+                        {new Intl.NumberFormat("nl-NL", { style: "currency", currency: "EUR" }).format(item.price)}
                       </p>
                       <Button asChild variant="outline" className="rounded-full">
                         <Link href={`/aanbod/${item.id}`}>Bekijk</Link>
@@ -231,12 +245,8 @@ export default function AanbodPage() {
             ) : (
               <div className="text-center py-16 flex flex-col items-center">
                 <XCircle className="h-16 w-16 text-muted-foreground mb-4" />
-                <h2 className="text-2xl font-bold tracking-tight">
-                  Geen resultaten gevonden
-                </h2>
-                <p className="mt-2 text-muted-foreground mb-6">
-                  Probeer uw zoekopdracht aan te passen.
-                </p>
+                <h2 className="text-2xl font-bold tracking-tight">Geen resultaten gevonden</h2>
+                <p className="mt-2 text-muted-foreground mb-6">Probeer uw zoekopdracht aan te passen.</p>
                 <Button onClick={resetFilters}>Reset filters</Button>
               </div>
             )}

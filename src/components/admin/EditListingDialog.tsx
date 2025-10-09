@@ -45,6 +45,7 @@ const listingSchema = z.object({
   price: z.coerce.number().positive("Prijs moet een positief getal zijn."),
   description: z.string().optional(),
   status: z.enum(["beschikbaar", "verkocht", "gereserveerd"]),
+  condition: z.enum(["nieuw", "gebruikt"]),
 });
 
 type ListingFormValues = z.infer<typeof listingSchema>;
@@ -75,6 +76,7 @@ export function EditListingDialog({
         year: listing.year || '',
         mileage: listing.mileage || '',
         sailing_hours: listing.sailing_hours || '',
+        condition: listing.condition || 'gebruikt',
       });
     }
   }, [listing, form]);
@@ -114,15 +116,8 @@ export function EditListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         <SelectItem value="Auto">Auto</SelectItem>
                         <SelectItem value="Boot">Boot</SelectItem>
@@ -138,9 +133,7 @@ export function EditListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Naam</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -151,9 +144,7 @@ export function EditListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Merk</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -164,9 +155,7 @@ export function EditListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Model</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <FormControl><Input {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -177,9 +166,7 @@ export function EditListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Bouwjaar</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
+                    <FormControl><Input type="number" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -191,9 +178,7 @@ export function EditListingDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Kilometerstand</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
+                      <FormControl><Input type="number" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -206,9 +191,7 @@ export function EditListingDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Vaaruren</FormLabel>
-                      <FormControl>
-                        <Input type="number" {...field} />
-                      </FormControl>
+                      <FormControl><Input type="number" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -220,9 +203,7 @@ export function EditListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Prijs</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
+                    <FormControl><Input type="number" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -233,19 +214,31 @@ export function EditListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Status</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                      </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
                       <SelectContent>
                         <SelectItem value="beschikbaar">Beschikbaar</SelectItem>
                         <SelectItem value="verkocht">Verkocht</SelectItem>
                         <SelectItem value="gereserveerd">Gereserveerd</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+               <FormField
+                control={form.control}
+                name="condition"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Conditie</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="nieuw">Nieuw</SelectItem>
+                        <SelectItem value="gebruikt">Gebruikt</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -259,9 +252,7 @@ export function EditListingDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Omschrijving</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} />
-                  </FormControl>
+                  <FormControl><Textarea {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}

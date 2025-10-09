@@ -43,6 +43,7 @@ const listingSchema = z.object({
   sailing_hours: z.coerce.number().int().positive("Vaaruren moeten een positief getal zijn.").optional().or(z.literal('')),
   price: z.coerce.number().positive("Prijs moet een positief getal zijn."),
   description: z.string().optional(),
+  condition: z.enum(["nieuw", "gebruikt"]).default("gebruikt"),
 });
 
 type ListingFormValues = z.infer<typeof listingSchema>;
@@ -65,6 +66,7 @@ export function AddListingDialog({
       description: "",
       brand: "",
       model: "",
+      condition: "gebruikt",
     },
   });
 
@@ -72,7 +74,6 @@ export function AddListingDialog({
 
   const onSubmit = async (values: ListingFormValues) => {
     try {
-      // Convert empty strings to null for optional number fields
       const payload = {
         ...values,
         year: values.year || null,
@@ -107,14 +108,9 @@ export function AddListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecteer een type" />
-                        </SelectTrigger>
+                        <SelectTrigger><SelectValue placeholder="Selecteer een type" /></SelectTrigger>
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Auto">Auto</SelectItem>
@@ -131,9 +127,7 @@ export function AddListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Naam</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Bijv. Audi RS6" {...field} />
-                    </FormControl>
+                    <FormControl><Input placeholder="Bijv. Audi RS6" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -144,9 +138,7 @@ export function AddListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Merk</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Bijv. Audi" {...field} />
-                    </FormControl>
+                    <FormControl><Input placeholder="Bijv. Audi" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -157,9 +149,7 @@ export function AddListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Model</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Bijv. RS6" {...field} />
-                    </FormControl>
+                    <FormControl><Input placeholder="Bijv. RS6" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -170,9 +160,7 @@ export function AddListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Bouwjaar</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Bijv. 2023" {...field} />
-                    </FormControl>
+                    <FormControl><Input type="number" placeholder="Bijv. 2023" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -184,9 +172,7 @@ export function AddListingDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Kilometerstand</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="Bijv. 50000" {...field} />
-                      </FormControl>
+                      <FormControl><Input type="number" placeholder="Bijv. 50000" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -199,9 +185,7 @@ export function AddListingDialog({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Vaaruren</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="Bijv. 120" {...field} />
-                      </FormControl>
+                      <FormControl><Input type="number" placeholder="Bijv. 120" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -213,9 +197,26 @@ export function AddListingDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Prijs</FormLabel>
-                    <FormControl>
-                      <Input type="number" placeholder="Bijv. 150000" {...field} />
-                    </FormControl>
+                    <FormControl><Input type="number" placeholder="Bijv. 150000" {...field} /></FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="condition"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Conditie</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="nieuw">Nieuw</SelectItem>
+                        <SelectItem value="gebruikt">Gebruikt</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -227,12 +228,7 @@ export function AddListingDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Omschrijving</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Voer een korte omschrijving in..."
-                      {...field}
-                    />
-                  </FormControl>
+                  <FormControl><Textarea placeholder="Voer een korte omschrijving in..." {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}
