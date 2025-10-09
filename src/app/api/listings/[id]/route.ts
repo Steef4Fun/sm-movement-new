@@ -3,6 +3,12 @@ import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseForm, getPublicPaths, deleteFile } from '@/lib/upload';
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
   try {
     const listing = await prisma.listing.findUnique({

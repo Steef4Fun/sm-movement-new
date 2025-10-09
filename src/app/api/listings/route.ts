@@ -3,6 +3,12 @@ import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseForm, getPublicPaths } from '@/lib/upload';
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function GET() {
   try {
     const listings = await prisma.listing.findMany({
