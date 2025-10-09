@@ -3,11 +3,7 @@ import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { parseForm, getPublicPaths } from '@/lib/upload';
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const maxDuration = 60; // 60 seconds
 
 export async function GET() {
   try {
