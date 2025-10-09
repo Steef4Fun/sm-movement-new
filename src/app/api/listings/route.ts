@@ -25,14 +25,22 @@ export async function POST(request: NextRequest) {
 
     const { type, name, price, description, brand, model, year, mileage, sailing_hours, condition } = fields;
 
+    const typeValue = Array.isArray(type) ? type[0] : type;
+    const nameValue = Array.isArray(name) ? name[0] : name;
+    const priceValue = Array.isArray(price) ? price[0] : price;
+
+    if (!typeValue || !nameValue || !priceValue) {
+      return NextResponse.json({ message: 'Type, naam en prijs zijn verplichte velden.' }, { status: 400 });
+    }
+
     const imagePaths = getPublicPaths(files.images);
     const videoPaths = getPublicPaths(files.videos);
 
     const newListing = await prisma.listing.create({
       data: { 
-        type: Array.isArray(type) ? type[0] : type,
-        name: Array.isArray(name) ? name[0] : name,
-        price: parseFloat(Array.isArray(price) ? price[0] : price),
+        type: typeValue,
+        name: nameValue,
+        price: parseFloat(priceValue),
         description: Array.isArray(description) ? description[0] : description,
         brand: Array.isArray(brand) ? brand[0] : brand,
         model: Array.isArray(model) ? model[0] : model,
