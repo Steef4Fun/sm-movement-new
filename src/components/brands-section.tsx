@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
+import Link from "next/link";
 
 export const BrandsSection = () => {
   const brands = [
@@ -68,14 +69,16 @@ export const BrandsSection = () => {
             <motion.div
               key={`${brand.name}-${index}`}
               variants={itemVariants}
-              className="group cursor-pointer"
+              className="group"
             >
-              <div className="relative w-full h-20 flex items-center justify-center p-4 rounded-lg border border-border/30 bg-card/50 transition-all duration-300 hover:border-primary/30 hover:bg-card hover:shadow-lg group-hover:scale-105">
-                {/* Placeholder for brand logos - replace with actual logos */}
-                <div className="w-full h-full flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-300">
-                  <span className="text-lg font-semibold">{brand.name}</span>
+              <Link href={`/aanbod?brand=${encodeURIComponent(brand.name)}`} className="block">
+                <div className="relative w-full h-20 flex items-center justify-center p-4 rounded-lg border border-border/30 bg-card/50 transition-all duration-300 hover:border-primary/30 hover:bg-card hover:shadow-lg group-hover:scale-105">
+                  {/* Placeholder for brand logos - replace with actual logos */}
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors duration-300">
+                    <span className="text-lg font-semibold">{brand.name}</span>
+                  </div>
                 </div>
-              </div>
+              </Link>
             </motion.div>
           ))}
         </motion.div>
