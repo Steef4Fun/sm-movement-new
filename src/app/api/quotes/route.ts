@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { NextRequest, NextResponse } from 'next/server';
 import { sendQuoteConfirmation } from '@/lib/mail';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 export async function GET(request: NextRequest) {
   const session = await getSession(request);
@@ -42,13 +43,16 @@ export async function POST(request: NextRequest) {
     
     let user = await prisma.user.findUnique({ where: { email: customer_email } });
     let isGuest = false;
+    let activationToken: string | null = null;
 
     if (!user) {
       isGuest = true;
-      // Generate a temporary, unusable password hash for the guest account
       const salt = await bcrypt.genSalt(10);
       const tempPassword = `guest_${Date.now()}_${Math.random()}`;
       const hashedPassword = await bcrypt.hash(tempPassword, salt);
+
+      activationToken = crypto.randomBytes(32).toString('hex');
+      const activationTokenExpires = new Date(Date.now() + 3600000 * 24); // 24 hours
 
       user = await prisma.user.create({
         data: {
@@ -57,6 +61,8 @@ export async function POST(request: NextRequest) {
           first_name: 'Nieuwe',
           last_name: 'Klant',
           password_hash: hashedPassword,
+          activation_token: activationToken,
+          activation_token_expires: activationTokenExpires,
         },
       });
     }
@@ -65,7 +71,6 @@ export async function POST(request: NextRequest) {
       data: { user_id: user.id, subject, amount, description },
     });
 
-    // Send confirmation email
     sendQuoteConfirmation({
       email: user.email,
       firstName: user.first_name,
@@ -73,6 +78,7 @@ export async function POST(request: NextRequest) {
       amount: newQuote.amount,
       description: newQuote.description,
       isGuest,
+      activationToken,
     });
 
     return NextResponse.json(newQuote, { status: 201 });

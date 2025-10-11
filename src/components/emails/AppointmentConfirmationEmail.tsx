@@ -6,6 +6,7 @@ interface AppointmentConfirmationEmailProps {
   requestedDate: string;
   notes: string | null;
   isGuest: boolean;
+  activationToken: string | null;
 }
 
 const main = {
@@ -45,11 +46,25 @@ const hr = {
   margin: "20px 0",
 };
 
+const button = {
+  backgroundColor: "#D6AF52",
+  borderRadius: "5px",
+  color: "#fff",
+  fontSize: "16px",
+  fontWeight: "bold",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "inline-block",
+  padding: "12px 20px",
+};
+
 const footer = {
   color: "#8898aa",
   fontSize: "12px",
   lineHeight: "16px",
 };
+
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
 export const AppointmentConfirmationEmail: React.FC<AppointmentConfirmationEmailProps> = ({
   firstName,
@@ -57,6 +72,7 @@ export const AppointmentConfirmationEmail: React.FC<AppointmentConfirmationEmail
   requestedDate,
   notes,
   isGuest,
+  activationToken,
 }) => (
   <div style={main}>
     <div style={container}>
@@ -79,16 +95,16 @@ export const AppointmentConfirmationEmail: React.FC<AppointmentConfirmationEmail
           <strong>Opmerkingen:</strong> {notes || "Geen"}
         </p>
         <hr style={hr} />
-        {isGuest && (
+        {isGuest && activationToken && (
           <>
             <p style={p}>
-              Er is automatisch een account voor u aangemaakt. Om uw afspraak te
-              beheren, kunt u het registratieproces voltooien met dit
-              e-mailadres.
+              Er is een account voor u aangemaakt. Klik op de onderstaande knop om uw account te activeren door uw gegevens in te vullen en een wachtwoord te kiezen.
             </p>
-            <p style={p}>
-              Ga naar onze website en klik op 'Registreren' om een wachtwoord in
-              te stellen.
+            <a href={`${baseUrl}/activeer-account?token=${activationToken}`} style={button}>
+              Account Activeren
+            </a>
+            <p style={{ ...p, fontSize: "12px", color: "#888" }}>
+              Deze link is 24 uur geldig.
             </p>
           </>
         )}

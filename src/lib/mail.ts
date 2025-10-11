@@ -16,6 +16,7 @@ interface AppointmentEmailProps {
   requestedDate: string;
   notes: string | null;
   isGuest: boolean;
+  activationToken: string | null;
 }
 
 interface QuoteEmailProps {
@@ -25,6 +26,7 @@ interface QuoteEmailProps {
   amount: number;
   description: string | null;
   isGuest: boolean;
+  activationToken: string | null;
 }
 
 interface WelcomeEmailProps {
@@ -43,7 +45,6 @@ export const sendAppointmentConfirmation = async (params: AppointmentEmailProps)
     });
   } catch (error) {
     console.error("Failed to send appointment confirmation email:", error);
-    // We don't re-throw here to avoid the main operation failing if email fails
   }
 };
 
