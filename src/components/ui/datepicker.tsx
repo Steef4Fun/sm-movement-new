@@ -44,7 +44,7 @@ export function DatePicker({ date, setDate, placeholder = "Kies een datum", from
           initialFocus
           locale={nl}
           fromDate={fromDate}
-          captionLayout="dropdown-buttons"
+          captionLayout="dropdown"
           fromYear={new Date().getFullYear() - 5}
           toYear={new Date().getFullYear() + 5}
         />
