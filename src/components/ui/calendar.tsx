@@ -59,9 +59,9 @@ function Calendar({
         day_hidden: "invisible",
         ...classNames,
       }}
+      iconLeft={<ChevronLeft className="h-4 w-4" />}
+      iconRight={<ChevronRight className="h-4 w-4" />}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
         Dropdown: ({ value, onChange, options }: DropdownProps) => {
           const [selectedValue, setSelectedValue] = React.useState(value)
           const handleOnChange = (newValue: string) => {
