@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { format } from "date-fns"
+import { nl } from "date-fns/locale"
 import { Calendar as CalendarIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -14,10 +15,10 @@ import {
 } from "@/components/ui/popover"
 
 interface DatePickerProps {
-  date?: Date;
-  setDate: (date?: Date) => void;
-  placeholder?: string;
-  fromDate?: Date;
+  date: Date | undefined
+  setDate: (date: Date | undefined) => void
+  placeholder?: string
+  fromDate?: Date
 }
 
 export function DatePicker({ date, setDate, placeholder = "Kies een datum", fromDate }: DatePickerProps) {
@@ -32,7 +33,7 @@ export function DatePicker({ date, setDate, placeholder = "Kies een datum", from
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP") : <span>{placeholder}</span>}
+          {date ? format(date, "PPP", { locale: nl }) : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
@@ -40,10 +41,11 @@ export function DatePicker({ date, setDate, placeholder = "Kies een datum", from
           mode="single"
           selected={date}
           onSelect={setDate}
-          fromDate={fromDate}
           initialFocus
-          captionLayout="dropdown"
-          fromYear={1960}
+          locale={nl}
+          fromDate={fromDate}
+          captionLayout="dropdown-buttons"
+          fromYear={new Date().getFullYear() - 5}
           toYear={new Date().getFullYear() + 5}
         />
       </PopoverContent>
