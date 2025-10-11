@@ -3,7 +3,7 @@
 import { Resend } from "resend";
 import { render } from "@react-email/render";
 import * as ics from 'ics';
-import { zonedTimeToUtc, utcToZonedTime, format } from 'date-fns-tz';
+import { toZonedTime, format } from 'date-fns-tz';
 import { AppointmentConfirmationEmail } from "@/components/emails/AppointmentConfirmationEmail";
 import { QuoteConfirmationEmail } from "@/components/emails/QuoteConfirmationEmail";
 import { WelcomeEmail } from "@/components/emails/WelcomeEmail";
@@ -42,7 +42,7 @@ export const sendAppointmentConfirmation = async (params: AppointmentEmailProps)
     const html = await render(AppointmentConfirmationEmail(params));
 
     // Create ICS file
-    const zonedDate = utcToZonedTime(new Date(params.requestedDate), timeZone);
+    const zonedDate = toZonedTime(new Date(params.requestedDate), timeZone);
     const event: ics.EventAttributes = {
       start: [
         zonedDate.getFullYear(),
