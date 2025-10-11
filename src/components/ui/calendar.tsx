@@ -64,6 +64,9 @@ function Calendar({
       }}
       components={{
         Dropdown: ({ value, onChange, options }: DropdownProps) => {
+          if (!options) {
+            return null
+          }
           const selected = options.find((option) => option.value === value)
           const handleChange = (newValue: string) => {
             const changeEvent = {
