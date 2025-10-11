@@ -66,7 +66,8 @@ export function EditAppointmentDialog({
     if (appointment) {
       const appointmentDate = new Date(appointment.requested_date);
       form.reset({
-        ...appointment,
+        service_type: appointment.service_type,
+        notes: appointment.notes || "",
         requested_date: appointmentDate,
         time: format(appointmentDate, "HH:mm"),
       });

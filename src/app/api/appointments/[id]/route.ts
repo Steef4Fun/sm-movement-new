@@ -9,10 +9,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   }
 
   try {
-    const { service_type, requested_date, notes, status } = await request.json();
+    const { service_type, requested_date, notes } = await request.json();
     const updatedAppointment = await prisma.appointment.update({
       where: { id: params.id },
-      data: { service_type, requested_date, notes, status },
+      data: { service_type, requested_date, notes },
     });
     return NextResponse.json(updatedAppointment);
   } catch (err: any) {

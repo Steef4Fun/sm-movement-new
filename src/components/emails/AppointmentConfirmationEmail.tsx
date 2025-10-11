@@ -1,4 +1,5 @@
 import * as React from "react";
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface AppointmentConfirmationEmailProps {
   firstName: string | null;
@@ -73,56 +74,61 @@ export const AppointmentConfirmationEmail: React.FC<AppointmentConfirmationEmail
   notes,
   isGuest,
   activationToken,
-}) => (
-  <div style={main}>
-    <div style={container}>
-      <div style={box}>
-        <h1 style={h1}>Afspraak Bevestigd</h1>
-        <p style={p}>Beste {firstName || "klant"},</p>
-        <p style={p}>
-          Bedankt voor uw aanvraag. Hierbij de bevestiging van uw afspraak:
-        </p>
-        <hr style={hr} />
-        <p style={p}>
-          <strong>Service:</strong> {serviceType}
-          <br />
-          <strong>Datum & Tijd:</strong>{" "}
-          {new Date(requestedDate).toLocaleString("nl-NL", {
-            dateStyle: "full",
-            timeStyle: "short",
-          })}
-          <br />
-          <strong>Opmerkingen:</strong> {notes || "Geen"}
-        </p>
-        <hr style={hr} />
-        {isGuest && activationToken && (
-          <>
-            <p style={p}>
-              Er is een account voor u aangemaakt. Klik op de onderstaande knop om uw account te activeren door uw gegevens in te vullen en een wachtwoord te kiezen.
-            </p>
-            <a href={`${baseUrl}/activeer-account?token=${activationToken}`} style={button}>
-              Account Activeren
-            </a>
-            <p style={{ ...p, fontSize: "12px", color: "#888" }}>
-              Deze link is 24 uur geldig.
-            </p>
-          </>
-        )}
-        {!isGuest && (
+}) => {
+  const formattedDate = formatInTimeZone(
+    new Date(requestedDate),
+    'Europe/Amsterdam',
+    "eeee d MMMM yyyy 'om' HH:mm 'uur'",
+    { locale: require('date-fns/locale/nl') }
+  );
+
+  return (
+    <div style={main}>
+      <div style={container}>
+        <div style={box}>
+          <h1 style={h1}>Afspraak Bevestigd</h1>
+          <p style={p}>Beste {firstName || "klant"},</p>
           <p style={p}>
-            U kunt de details van deze afspraak en uw andere gegevens bekijken
-            in uw account op onze website.
+            Bedankt voor uw aanvraag. Hierbij de bevestiging van uw afspraak:
           </p>
-        )}
-        <p style={p}>Met vriendelijke groet,</p>
-        <p style={p}>Het team van SM Movement</p>
-      </div>
-      <div style={box}>
-        <hr style={hr} />
-        <p style={footer}>
-          SM Movement, Woudmeer 16, Houten
-        </p>
+          <hr style={hr} />
+          <p style={p}>
+            <strong>Service:</strong> {serviceType}
+            <br />
+            <strong>Datum & Tijd:</strong> {formattedDate}
+            <br />
+            <strong>Opmerkingen:</strong> {notes || "Geen"}
+          </p>
+          <hr style={hr} />
+          {isGuest && activationToken && (
+            <>
+              <p style={p}>
+                Er is een account voor u aangemaakt. Klik op de onderstaande knop om uw account te activeren door uw gegevens in te vullen en een wachtwoord te kiezen.
+              </p>
+              <a href={`${baseUrl}/activeer-account?token=${activationToken}`} style={button}>
+                Account Activeren
+              </a>
+              <p style={{ ...p, fontSize: "12px", color: "#888" }}>
+                Deze link is 24 uur geldig.
+              </p>
+            </>
+          )}
+          {!isGuest && (
+            <p style={p}>
+              U kunt de details van deze afspraak en uw andere gegevens bekijken
+              in uw account op onze website.
+            </p>
+          )}
+          <p style={p}>Met vriendelijke groet,</p>
+          <p style={p}>Het team van SM Movement</p>
+        </div>
+        <div style={box}>
+          <hr style={hr} />
+          <p style={footer}>
+            SM Movement, Woudmeer 16, Houten
+          </p>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};

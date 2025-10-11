@@ -21,6 +21,9 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 type Quote = {
   id: string;
@@ -35,6 +38,7 @@ export default function AccountOffertesPage() {
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
   const [openQuoteId, setOpenQuoteId] = useState<string | null>(null);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const fetchQuotes = useCallback(async () => {
     setLoading(true);
@@ -95,10 +99,11 @@ export default function AccountOffertesPage() {
               </TableRow>
             ) : quotes.length > 0 ? (
               quotes.flatMap((quote) => {
+                const isExpanded = openQuoteId === quote.id;
                 const rows = [
                   <TableRow key={quote.id} onClick={() => toggleQuote(quote.id)} className="cursor-pointer">
                     <TableCell>
-                      <ChevronDown className={cn("h-4 w-4 transition-transform", openQuoteId === quote.id && "rotate-180")} />
+                      <ChevronDown className={cn("h-4 w-4 transition-transform", isExpanded && "rotate-180")} />
                     </TableCell>
                     <TableCell className="font-medium">{quote.subject}</TableCell>
                     <TableCell>
@@ -114,7 +119,7 @@ export default function AccountOffertesPage() {
                     <TableCell className="text-right">
                       {quote.status === 'in afwachting' && (
                         <div className="flex gap-2 justify-end">
-                          <Button size="sm" className="rounded-full" onClick={(e) => { e.stopPropagation(); handleStatusUpdate(quote.id, 'geaccepteerd'); }}>
+                          <Button size="sm" className="rounded-full" disabled={!termsAccepted} onClick={(e) => { e.stopPropagation(); handleStatusUpdate(quote.id, 'geaccepteerd'); }}>
                             Accepteren
                           </Button>
                           <Button size="sm" variant="destructive" className="rounded-full" onClick={(e) => { e.stopPropagation(); handleStatusUpdate(quote.id, 'geweigerd'); }}>
@@ -126,15 +131,29 @@ export default function AccountOffertesPage() {
                   </TableRow>
                 ];
 
-                if (openQuoteId === quote.id) {
+                if (isExpanded) {
                   rows.push(
                     <TableRow key={`${quote.id}-details`}>
                       <TableCell colSpan={6} className="p-0">
-                        <div className="p-4 bg-muted/50">
-                          <h4 className="font-semibold mb-2">Omschrijving</h4>
-                          <p className="text-sm text-muted-foreground whitespace-pre-wrap">
-                            {quote.description || "Geen omschrijving beschikbaar."}
-                          </p>
+                        <div className="p-4 bg-muted/50 space-y-4">
+                          <div>
+                            <h4 className="font-semibold mb-2">Omschrijving</h4>
+                            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+                              {quote.description || "Geen omschrijving beschikbaar."}
+                            </p>
+                          </div>
+                          {quote.status === 'in afwachting' && (
+                            <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                              <Checkbox id={`terms-${quote.id}`} checked={termsAccepted} onCheckedChange={(checked) => setTermsAccepted(Boolean(checked))} />
+                              <Label htmlFor={`terms-${quote.id}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                Ik ga akkoord met de{" "}
+                                <Link href="/algemene-voorwaarden" className="underline hover:text-primary" target="_blank">
+                                  algemene voorwaarden
+                                </Link>
+                                .
+                              </Label>
+                            </div>
+                          )}
                         </div>
                       </TableCell>
                     </TableRow>

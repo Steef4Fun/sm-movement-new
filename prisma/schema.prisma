@@ -50,7 +50,6 @@ model Appointment {
   service_type   String
   requested_date DateTime
   notes          String?
-  status         String   @default("in afwachting") // 'in afwachting', 'bevestigd', 'geannuleerd'
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
   user           User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
