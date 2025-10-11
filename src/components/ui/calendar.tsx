@@ -2,9 +2,7 @@
 
 import * as React from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import { CaptionProps, DayPicker, useDayPicker, useNavigation } from "react-day-picker"
-import { format } from "date-fns"
-import { nl } from "date-fns/locale"
+import { DayPicker, DropdownProps } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
@@ -15,92 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { ScrollArea } from "./scroll-area"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
-
-function CustomCaption(props: CaptionProps) {
-  const { goToMonth, nextMonth, previousMonth } = useNavigation()
-  const { fromYear, toYear } = useDayPicker()
-
-  const displayMonthDate = props.calendarMonth.date
-
-  const handleMonthChange = (value: string) => {
-    const month = parseInt(value, 10)
-    const newDate = new Date(displayMonthDate)
-    newDate.setMonth(month)
-    goToMonth(newDate)
-  }
-
-  const handleYearChange = (value: string) => {
-    const year = parseInt(value, 10)
-    const newDate = new Date(displayMonthDate)
-    newDate.setFullYear(year)
-    goToMonth(newDate)
-  }
-
-  const startYear = fromYear || new Date().getFullYear() - 100
-  const endYear = toYear || new Date().getFullYear() + 5
-
-  return (
-    <div className="flex items-center justify-between gap-2 px-1 pt-1">
-      <div className="flex items-center gap-1">
-        <Select
-          value={String(displayMonthDate.getMonth())}
-          onValueChange={handleMonthChange}
-        >
-          <SelectTrigger className="w-[110px] h-8 text-sm focus:ring-0">
-            <SelectValue>
-              {format(displayMonthDate, "MMMM", { locale: nl })}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {Array.from({ length: 12 }).map((_, i) => (
-              <SelectItem key={i} value={String(i)}>
-                {format(new Date(2000, i), "MMMM", { locale: nl })}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select
-          value={String(displayMonthDate.getFullYear())}
-          onValueChange={handleYearChange}
-        >
-          <SelectTrigger className="w-[80px] h-8 text-sm focus:ring-0">
-            <SelectValue>{displayMonthDate.getFullYear()}</SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {Array.from({ length: endYear - startYear + 1 }).map((_, i) => {
-              const year = startYear + i
-              return (
-                <SelectItem key={year} value={String(year)}>
-                  {year}
-                </SelectItem>
-              )
-            })}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          disabled={!previousMonth}
-          onClick={() => previousMonth && goToMonth(previousMonth)}
-          className={cn(buttonVariants({ variant: "outline" }), "h-8 w-8 p-0")}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          disabled={!nextMonth}
-          onClick={() => nextMonth && goToMonth(nextMonth)}
-          className={cn(buttonVariants({ variant: "outline" }), "h-8 w-8 p-0")}
-        >
-          <ChevronRight className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
-  )
-}
 
 function Calendar({
   className,
@@ -116,12 +31,15 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "hidden",
+        caption_label: "text-sm font-medium",
+        caption_dropdowns: "flex justify-center gap-1",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
           "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
         ),
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
         table: "w-full border-collapse space-y-1",
         head_row: "flex",
         head_cell:
@@ -143,7 +61,44 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Caption: CustomCaption,
+        Dropdown: ({ value, onChange, children }: DropdownProps) => {
+          const options = React.Children.toArray(
+            children
+          ) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[]
+          const selected = options.find((child) => child.props.value === value)
+          const handleChange = (value: string) => {
+            const changeEvent = {
+              target: { value },
+            } as React.ChangeEvent<HTMLSelectElement>
+            onChange?.(changeEvent)
+          }
+          return (
+            <Select
+              value={value?.toString()}
+              onValueChange={(value) => {
+                handleChange(value)
+              }}
+            >
+              <SelectTrigger className="pr-1.5 focus:ring-0 h-8 text-sm w-[130px]">
+                <SelectValue>{selected?.props?.children}</SelectValue>
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <ScrollArea className="h-80">
+                  {options.map((option, id: number) => (
+                    <SelectItem
+                      key={`${option.props.value}-${id}`}
+                      value={option.props.value?.toString() ?? ""}
+                    >
+                      {option.props.children}
+                    </SelectItem>
+                  ))}
+                </ScrollArea>
+              </SelectContent>
+            </Select>
+          )
+        },
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />
