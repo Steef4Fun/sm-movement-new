@@ -33,7 +33,7 @@ function Calendar({
         months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
         month: "space-y-4",
         caption: "flex justify-center pt-1 relative items-center",
-        caption_label: "text-sm font-medium",
+        caption_label: "text-sm font-medium hidden", // Hide default label as dropdowns replace it
         caption_dropdowns: "flex justify-center gap-1",
         nav: "space-x-1 flex items-center",
         nav_button: cn(
@@ -63,35 +63,33 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        Dropdown: ({ value, onChange, children }: DropdownProps) => {
-          const options = React.Children.toArray(
-            children
-          ) as React.ReactElement<React.HTMLProps<HTMLOptionElement>>[]
-          const selected = options.find((child) => child.props.value === value)
-          const handleChange = (value: string) => {
+        Dropdown: ({ value, onChange, options }: DropdownProps) => {
+          const selected = options.find((option) => option.value === value)
+          const handleChange = (newValue: string) => {
             const changeEvent = {
-              target: { value },
+              target: { value: newValue },
             } as React.ChangeEvent<HTMLSelectElement>
             onChange?.(changeEvent)
           }
           return (
             <Select
               value={value?.toString()}
-              onValueChange={(value) => {
-                handleChange(value)
+              onValueChange={(newValue) => {
+                handleChange(newValue)
               }}
             >
               <SelectTrigger className="pr-1.5 focus:ring-0 h-8 text-sm">
-                <SelectValue>{selected?.props?.children}</SelectValue>
+                <SelectValue>{selected?.label}</SelectValue>
               </SelectTrigger>
               <SelectContent position="popper">
                 <ScrollArea className="h-80">
                   {options.map((option, id: number) => (
                     <SelectItem
-                      key={`${option.props.value}-${id}`}
-                      value={option.props.value?.toString() ?? ""}
+                      key={`${option.value}-${id}`}
+                      value={option.value.toString()}
+                      disabled={option.disabled}
                     >
-                      {option.props.children}
+                      {option.label}
                     </SelectItem>
                   ))}
                 </ScrollArea>
