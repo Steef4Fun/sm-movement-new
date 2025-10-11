@@ -22,8 +22,6 @@ interface DatePickerProps {
 }
 
 export function DatePicker({ date, setDate, placeholder = "Kies een datum", fromDate }: DatePickerProps) {
-  const currentYear = new Date().getFullYear();
-  
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -46,9 +44,9 @@ export function DatePicker({ date, setDate, placeholder = "Kies een datum", from
           initialFocus
           locale={nl}
           fromDate={fromDate}
-          captionLayout="dropdown"
-          fromYear={currentYear - 100}
-          toYear={currentYear + 5}
+          captionLayout="dropdown-buttons"
+          fromYear={new Date().getFullYear() - 5}
+          toYear={new Date().getFullYear() + 5}
         />
       </PopoverContent>
     </Popover>
